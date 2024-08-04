@@ -60,7 +60,7 @@ using Plots
 
 f(x,y) = x^2 + sin(x) + 1.5y^2 + sinh(y) - x*y/5
 Random.seed!(42)
-ps_init = [@SVector randn(2)/5 for _ in 1:6]
+ps_init = [@SVector rand(2) for _ in 1:6]
 ps = copy(ps_init)
 optimize!(f, ps, 20)
 xs_plot = -3:0.1:3
