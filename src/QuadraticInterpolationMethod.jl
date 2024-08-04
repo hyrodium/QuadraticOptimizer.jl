@@ -1,5 +1,9 @@
 module QuadraticInterpolationMethod
 
-# Write your package code here.
+using LinearAlgebra
+using StaticArrays
+
+include("1-dim.jl")
+include("n-dim.jl")
 
 end
