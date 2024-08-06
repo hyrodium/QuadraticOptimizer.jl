@@ -1,4 +1,4 @@
-module QuadraticInterpolationMethod
+module QuadraticOptimizer
 
 using LinearAlgebra
 using StaticArrays

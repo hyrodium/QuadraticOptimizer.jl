@@ -1,6 +1,6 @@
-using QuadraticInterpolationMethod
+using QuadraticOptimizer
 using Test
 
-@testset "QuadraticInterpolationMethod.jl" begin
+@testset "QuadraticOptimizer.jl" begin
     # Write your tests here.
 end

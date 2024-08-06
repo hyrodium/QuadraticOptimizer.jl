@@ -1,14 +1,14 @@
-# QuadraticInterpolationMethod
+# QuadraticOptimizer
 
 A Julia implementation for quadratic interpolation method (QIM) and quadratic fitting method (QFM).
 
-[![Build Status](https://github.com/hyrodium/QuadraticInterpolationMethod.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/hyrodium/QuadraticInterpolationMethod.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Build Status](https://github.com/hyrodium/QuadraticOptimizer.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/hyrodium/QuadraticOptimizer.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
 Quadratic interpolation method is an optimization method by interpolating given evaluation points with a quadratic polynomial.
 
 ## 1-dim example
 ```julia-repl
-julia> using QuadraticInterpolationMethod: optimize!
+julia> using QuadraticOptimizer: optimize!
 
 julia> f(x) = sin(x) + x^2/10  # Function to minimize
 f (generic function with 1 method)
@@ -55,7 +55,7 @@ julia> scatter!(pl, xs_init, f.(xs_init); color=:blue3, label="initial points")
 ## 2-dim example
 
 ```julia
-using QuadraticInterpolationMethod: optimize!
+using QuadraticOptimizer: optimize!
 using StaticArrays
 import Random
 using Plots
