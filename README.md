@@ -1,5 +1,7 @@
 # QuadraticInterpolationMethod
 
+A Julia implementation for quadratic interpolation method (QIM) and quadratic fitting method (QFM).
+
 [![Build Status](https://github.com/hyrodium/QuadraticInterpolationMethod.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/hyrodium/QuadraticInterpolationMethod.jl/actions/workflows/CI.yml?query=branch%3Amain)
 
 Quadratic interpolation method is an optimization method by interpolating given evaluation points with a quadratic polynomial.
