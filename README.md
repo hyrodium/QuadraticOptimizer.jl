@@ -1,8 +1,13 @@
-# QuadraticOptimizer
+# QuadraticOptimizer.jl
 
 A Julia implementation for quadratic interpolation method (QIM) and quadratic fitting method (QFM).
 
-[![Build Status](https://github.com/hyrodium/QuadraticOptimizer.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/hyrodium/QuadraticOptimizer.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://hyrodium.github.io/QuadraticOptimizer.jl/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://hyrodium.github.io/QuadraticOptimizer.jl/dev)
+[![Build Status](https://github.com/hyrodium/QuadraticOptimizer.jl/workflows/CI/badge.svg)](https://github.com/hyrodium/QuadraticOptimizer.jl/actions)
+[![Coverage](https://codecov.io/gh/hyrodium/QuadraticOptimizer.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/hyrodium/QuadraticOptimizer.jl)
+[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
+[![QuadraticOptimizer Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/QuadraticOptimizer)](https://pkgs.genieframework.com?packages=QuadraticOptimizer)
 
 Quadratic interpolation method is an optimization method by interpolating given evaluation points with a quadratic polynomial.
 
