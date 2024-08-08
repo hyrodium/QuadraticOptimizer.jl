@@ -10,21 +10,11 @@ function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::MVector{N}, X::MMat
     end
     X[i,M+1:M+D] .= p
     Y = pinv(X) * F
-    a = Y[1:M]
+    a = Y[SOneTo(M)]
     b = SVector{D}(Y[M+1:M+D])
-    A = MMatrix{D,D}(zeros(D,D))
-    j = 1
-    for i1 in 1:D
-        for i2 in i1:D
-            if i1 == i2
-                A[i1,i2] = 2a[j]
-            else
-                A[i1,i2] = A[i2,i1] = a[j]
-            end
-            j = j + 1
-        end
-    end
-    return -A\b
+    c = Y[end]
+    q = Quadratic(a,b,c)
+    return center(q)
 end
 
 function optimize!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
@@ -42,7 +32,7 @@ function optimize!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
             j = j + 1
         end
         X[i,M+1:M+D] .= p
-        X[i,N] = 1
+        # X[i,N] = 1
     end
     for _ in 1:n
         p = _recursion!(f, ps, F, X)
