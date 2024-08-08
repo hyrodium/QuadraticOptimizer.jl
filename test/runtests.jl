@@ -61,12 +61,22 @@ Aqua.test_all(QuadraticOptimizer)
 end
 
 @testset "optimize_qim!" begin
+    @testset "D = 1" begin
+        f(p) = sin(p[1]) + p[1]^2/10
+        xs_init = [1.2, 0.1, -2.2]
+        ps_init = SVector{1}.(xs_init)
+        xs, _ = optimize_qim(f, xs_init, 6)
+        ps, _ = optimize_qim(f, ps_init, 6)
+        @test all([p[1] for p in ps] .≈ xs)
+        @test abs(ForwardDiff.derivative(f, xs[end])) < 1e-7
+        @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-7
+    end
+
     @testset "D = 2" begin
         f(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:6]
-        ps = copy(ps_init)
-        optimize_qim!(f, ps, 20)
+        ps, fs = optimize_qim(f, ps_init, 20)
         @test length(ps) == 26
         @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-6
         @test norm(ForwardDiff.gradient(f, ps[1])) > 1e-1
@@ -78,8 +88,7 @@ end
         f(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:10]
-        ps = copy(ps_init)
-        optimize_qfm!(f, ps, 30)
+        ps, fs = optimize_qfm(f, ps_init, 30)
         @test length(ps) == 40
         @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-3
         @test norm(ForwardDiff.gradient(f, ps[1])) > 1e-1
