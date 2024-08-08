@@ -10,6 +10,7 @@ function _recursion!(f, xs::Vector{<:Real}, F::MVector{3}, X::MVector{3})
 end
 
 function optimize!(f, xs::Vector{<:Real}, n::Integer)
+    length(xs) ≠ 3 && error("The length of initial values should be 3.")
     F = @MVector zeros(3)
     X = @MVector zeros(3)
     X[1] = xs[1]

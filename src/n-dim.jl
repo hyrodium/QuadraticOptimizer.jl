@@ -30,6 +30,7 @@ end
 function optimize!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
     M = D*(D+1)÷2
     N = D+M+1
+    length(ps) ≠ N && error("The length of initial values should be $N.")
     F = @MVector zeros(N)
     X = @MMatrix ones(N,N)
     for i in 1:N-1
