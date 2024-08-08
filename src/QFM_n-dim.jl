@@ -1,7 +1,7 @@
-function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::MVector{N}, X::MMatrix{N,N}) where {D, N}
+function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::Vector, X::Matrix, L::Integer) where {D, N}
     M = D*(D+1)÷2
     p = ps[end]
-    i = mod(length(ps), 1:N)
+    i = mod(length(ps), 1:L)
     F[i] = f(p...)
     j = 1
     for i1 in 1:D, i2 in i1:D
@@ -9,7 +9,12 @@ function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::MVector{N}, X::MMat
         j = j + 1
     end
     X[i,M+1:M+D] .= p
-    Y = pinv(X) * F
+
+    @show size(F)
+    @show size(X)
+    Y = (X'*X)\(X'*F)
+    @show size(Y)
+
     a = Y[SOneTo(M)]
     b = SVector{D}(Y[M+1:M+D])
     c = Y[end]
@@ -17,13 +22,13 @@ function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::MVector{N}, X::MMat
     return center(q)
 end
 
-function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
+function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
     L = length(ps)
     M = D*(D+1)÷2
     N = D+M+1
-    L ≠ N && error("The length of initial values should be equal to $(N).")
-    F = @MVector zeros(N)
-    X = @MMatrix ones(N,N)
+    L ≤ N && error("The length of initial values should be larger than $(N).")
+    F = zeros(L)
+    X = ones(L, N)
     for i in 1:N-1
         p = ps[i]
         F[i] = f(p...)
@@ -33,10 +38,9 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
             j = j + 1
         end
         X[i,M+1:M+D] .= p
-        # X[i,N] = 1
     end
     for _ in 1:n
-        p = _recursion!(f, ps, F, X)
+        p = _recursion!(f, ps, F, X, L)
         push!(ps,p)
     end
     return ps
