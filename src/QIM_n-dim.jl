@@ -17,7 +17,7 @@ function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::MVector{N}, X::MMat
     return center(q)
 end
 
-function optimize!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
+function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
     M = D*(D+1)÷2
     N = D+M+1
     length(ps) ≠ N && error("The length of initial values should be $N.")

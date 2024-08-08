@@ -1,13 +1,16 @@
 using QuadraticOptimizer
-using QuadraticOptimizer: optimize!
+using QuadraticOptimizer: optimize_qim!
 using QuadraticOptimizer: center
 using StaticArrays
+using LinearAlgebra
+using Random
+using ForwardDiff
 using Test
 using Aqua
 
 Aqua.test_all(QuadraticOptimizer)
 
-@testset "quadratic" begin
+@testset "Quadratic type" begin
     @testset "D = 1" begin
         D = 1
         M = D*(D+1)÷2
@@ -54,5 +57,19 @@ Aqua.test_all(QuadraticOptimizer)
             + b[3]*x₃
             + c
         )
+    end
+end
+
+@testset "optimize_qim!" begin
+    @testset "D = 2" begin
+        f(x,y) = x^2 + sin(x) + 1.5y^2 + sinh(y) - x*y/5
+        f(p) = f(p[1],p[2])
+        Random.seed!(42)
+        ps_init = [@SVector rand(2) for _ in 1:6]
+        ps = copy(ps_init)
+        optimize_qim!(f, ps, 20)
+        @test length(ps) == 26
+        @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-6
+        @test norm(ForwardDiff.gradient(f, ps[1])) > 1e-1
     end
 end

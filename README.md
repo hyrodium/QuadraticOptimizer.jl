@@ -13,7 +13,7 @@ Quadratic interpolation method is an optimization method by interpolating given 
 
 ## 1-dim example
 ```julia-repl
-julia> using QuadraticOptimizer: optimize!
+julia> using QuadraticOptimizer: optimize_qim!
 
 julia> f(x) = sin(x) + x^2/10  # Function to minimize
 f (generic function with 1 method)
@@ -30,7 +30,7 @@ julia> xs = copy(xs_init)  # Keep initial points
   0.1
  -2.2
 
-julia> optimize!(f, xs, 10)  # Optimize 10 steps
+julia> optimize_qim!(f, xs, 10)  # Optimize 10 steps
 13-element Vector{Float64}:
   1.2
   0.1
@@ -60,7 +60,7 @@ julia> scatter!(pl, xs_init, f.(xs_init); color=:blue3, label="initial points")
 ## 2-dim example
 
 ```julia
-using QuadraticOptimizer: optimize!
+using QuadraticOptimizer: optimize_qim!
 using StaticArrays
 import Random
 using Plots
@@ -69,7 +69,7 @@ f(x,y) = x^2 + sin(x) + 1.5y^2 + sinh(y) - x*y/5
 Random.seed!(42)
 ps_init = [@SVector rand(2) for _ in 1:6]
 ps = copy(ps_init)
-optimize!(f, ps, 20)
+optimize_qim!(f, ps, 20)
 xs_plot = -3:0.1:3
 ys_plot = -5:0.1:3
 zs_plot = f.(xs_plot', ys_plot)

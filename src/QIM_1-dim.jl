@@ -9,7 +9,7 @@ function _recursion!(f, xs::Vector{<:Real}, F::MVector{3}, X::MVector{3})
     return (a₁*(x₂+x₃)+a₂*(x₃+x₁)+a₃*(x₁+x₂))/2(a₁+a₂+a₃)
 end
 
-function optimize!(f, xs::Vector{<:Real}, n::Integer)
+function optimize_qim!(f, xs::Vector{<:Real}, n::Integer)
     length(xs) ≠ 3 && error("The length of initial values should be 3.")
     F = @MVector zeros(3)
     X = @MVector zeros(3)
