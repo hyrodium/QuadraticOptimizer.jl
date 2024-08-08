@@ -62,8 +62,7 @@ end
 
 @testset "optimize_qim!" begin
     @testset "D = 2" begin
-        f(x,y) = x^2 + sin(x) + 1.5y^2 + sinh(y) - x*y/5
-        f(p) = f(p[1],p[2])
+        f(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:6]
         ps = copy(ps_init)

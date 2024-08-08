@@ -1,4 +1,4 @@
-function _recursion!(f, xs::Vector{<:Real}, F::MVector{3}, X::MVector{3})
+function _recursion_qim!(f, xs::Vector{<:Real}, F::MVector{3}, X::MVector{3})
     F[mod(length(xs), 1:3)] = f(xs[end])
     X[mod(length(xs), 1:3)] = xs[end]
     f₁ ,f₂, f₃ = F
@@ -18,7 +18,7 @@ function optimize_qim!(f, xs::Vector{<:Real}, n::Integer)
     F[1] = f(xs[1])
     F[2] = f(xs[2])
     for _ in 1:n
-        x = _recursion!(f, xs, F, X)
+        x = _recursion_qim!(f, xs, F, X)
         push!(xs,x)
     end
     return xs

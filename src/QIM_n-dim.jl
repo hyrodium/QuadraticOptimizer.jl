@@ -1,4 +1,4 @@
-function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::MVector{N}, X::MMatrix{N,N}) where {D, N}
+function _recursion_qim!(f, ps::Vector{<:SVector{D, <:Real}}, F::MVector{N}, X::MMatrix{N,N}) where {D, N}
     M = D*(D+1)÷2
     p = ps[end]
     i = mod(length(ps), 1:N)
@@ -33,10 +33,9 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
             j = j + 1
         end
         X[i,M+1:M+D] .= p
-        # X[i,N] = 1
     end
     for _ in 1:n
-        p = _recursion!(f, ps, F, X)
+        p = _recursion_qim!(f, ps, F, X)
         push!(ps,p)
     end
     return ps
