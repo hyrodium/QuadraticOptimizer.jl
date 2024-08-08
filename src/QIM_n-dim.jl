@@ -2,7 +2,7 @@ function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::MVector{N}, X::MMat
     M = D*(D+1)÷2
     p = ps[end]
     i = mod(length(ps), 1:N)
-    F[i] = f(p...)
+    F[i] = f(p)
     j = 1
     for i1 in 1:D, i2 in i1:D
         X[i,j] = p[i1]*p[i2]
@@ -26,7 +26,7 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
     X = @MMatrix ones(N,N)
     for i in 1:N-1
         p = ps[i]
-        F[i] = f(p...)
+        F[i] = f(p)
         j = 1
         for i1 in 1:D, i2 in i1:D
             X[i,j] = p[i1]*p[i2]

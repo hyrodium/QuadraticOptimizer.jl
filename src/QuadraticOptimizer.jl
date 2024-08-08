@@ -4,7 +4,6 @@ using LinearAlgebra
 using StaticArrays
 
 export Quadratic
-# export center
 export optimize_qim!
 export optimize_qfm!
 

@@ -2,19 +2,14 @@ function _recursion!(f, ps::Vector{<:SVector{D, <:Real}}, F::Vector, X::Matrix, 
     M = D*(D+1)÷2
     p = ps[end]
     i = mod(length(ps), 1:L)
-    F[i] = f(p...)
+    F[i] = f(p)
     j = 1
     for i1 in 1:D, i2 in i1:D
         X[i,j] = p[i1]*p[i2]
         j = j + 1
     end
     X[i,M+1:M+D] .= p
-
-    @show size(F)
-    @show size(X)
-    Y = (X'*X)\(X'*F)
-    @show size(Y)
-
+    Y = pinv(X'*X)*(X'*F)
     a = Y[SOneTo(M)]
     b = SVector{D}(Y[M+1:M+D])
     c = Y[end]
@@ -31,7 +26,7 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer) where D
     X = ones(L, N)
     for i in 1:N-1
         p = ps[i]
-        F[i] = f(p...)
+        F[i] = f(p)
         j = 1
         for i1 in 1:D, i2 in i1:D
             X[i,j] = p[i1]*p[i2]
