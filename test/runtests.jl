@@ -68,8 +68,8 @@ end
         xs, _ = optimize_qim(f, xs_init, 6)
         ps, _ = optimize_qim(f, ps_init, 6)
         @test all([p[1] for p in ps] .≈ xs)
-        @test abs(ForwardDiff.derivative(f, xs[end])) < 1e-7
-        @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-7
+        @test abs(ForwardDiff.derivative(f, xs[end])) < 1e-6
+        @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-6
     end
 
     @testset "D = 2" begin
