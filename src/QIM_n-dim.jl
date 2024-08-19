@@ -26,7 +26,7 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
     X = @MMatrix ones(N,N)
     for i in 1:N
         p = ps[i]
-        F[i] = f(p)
+        F[i] = fs[i]
         j = 1
         for i1 in 1:D, i2 in i1:D
             X[j,i] = p[i1]*p[i2]

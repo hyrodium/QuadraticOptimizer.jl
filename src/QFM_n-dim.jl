@@ -26,7 +26,7 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
     X = ones(N, L)
     for i in 1:N-1
         p = ps[i]
-        F[i] = f(p)
+        F[i] = fs[i]
         j = 1
         for i1 in 1:D, i2 in i1:D
             X[i,j] = p[i1]*p[i2]
