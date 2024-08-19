@@ -30,27 +30,14 @@ julia> xs = copy(xs_init)  # Keep initial points
   0.1
  -2.2
 
-julia> optimize_qim!(f, xs, 10)  # Optimize 10 steps
-13-element Vector{Float64}:
-  1.2
-  0.1
- -2.2
- -1.4980661244174434
- -1.2293686986818357
- -1.3061365335230135
- -1.3059492270208548
- -1.3064424808417185
- -1.3064400170208186
- -1.306440099017006
- -1.3066465256797584
- -1.306452471584103
- -1.3064400463690848
+julia> xs, fs = optimize_qim(f, xs, 10)  # Optimize 10 steps
+([1.2, 0.1, -2.2, -1.4980661244174434, -1.2293686986818357, -1.3061365335230135, -1.3059492270208548, -1.3064424808417185, -1.3064400170208186, -1.306440099017006, -1.3066465256797584, -1.306452471584103, -1.3064400463690848], [1.0760390859672262, 0.10083341664682816, -0.32449640381959, -0.7729361131769432, -0.7911428696877567, -0.79458228390424, -0.7945821972306206, -0.7945823375579667, -0.7945823375615284, -0.7945823375615235, -0.7945823127123063, -0.7945823374710272, -0.7945823375615275])
 
 julia> using Plots
 
 julia> pl = plot(f; xlims=(-5,5), color=:red3, label="objective")
 
-julia> plot!(pl, xs, f.(xs); color=:blue3, label="iteration")
+julia> plot!(pl, xs, fs; color=:blue3, label="iteration")
 
 julia> scatter!(pl, xs_init, f.(xs_init); color=:blue3, label="initial points")
 ```
@@ -67,9 +54,10 @@ using Plots
 
 f(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
 Random.seed!(42)
-ps_init = [@SVector rand(2) for _ in 1:6]
-ps = copy(ps_init)
-optimize_qim!(f, ps, 20)
+xs_init = rand(6)
+ys_init = rand(6)
+ps_init = SVector.(xs_init, ys_init)
+ps, fs = optimize_qim(f, ps_init, 20)
 xs_plot = -3:0.1:3
 ys_plot = -5:0.1:3
 zs_plot = f.(tuple.(xs_plot', ys_plot))
@@ -90,7 +78,7 @@ f(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
 Random.seed!(42)
 ps_init = [@SVector rand(2) for _ in 1:10]
 ps = copy(ps_init)
-optimize_qfm!(f, ps, 30)
+optimize_qfm(f, ps, 30)
 xs_plot = -3:0.1:3
 ys_plot = -5:0.1:3
 zs_plot = f.(tuple.(xs_plot', ys_plot))
