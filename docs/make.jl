@@ -1,6 +1,8 @@
 using Documenter
 using QuadraticOptimizer
 using Plots
+using Random
+using StaticArrays
 
 # Setup for doctests in docstrings
 DocMeta.setdocmeta!(QuadraticOptimizer, :DocTestSetup, :(using QuadraticOptimizer))
