@@ -1,4 +1,4 @@
-function _quadratic(X::Matrix, F::Vector, ::Val{D}) where D
+function _quadratic(X::AbstractMatrix, F::AbstractVector, ::Val{D}) where D
     M = D*(D+1)÷2
     Y = pinv(X*X')*(X*F)
     a = Y[SOneTo(M)]

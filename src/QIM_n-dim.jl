@@ -11,7 +11,7 @@ function _update_XF_at_j!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVe
     return X, F
 end
 
-function _quadratic(X::MMatrix{N,N}, F::MVector{N}, ::Val{D}) where {N, D}
+function _quadratic(X::StaticMatrix{N,N}, F::StaticVector{N}, ::Val{D}) where {N, D}
     M = D*(D+1)÷2
     Y = pinv(X') * F
     a = Y[SOneTo(M)]
@@ -67,15 +67,15 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
     length(fs) == L == N || error("The length of initial values should be equal to $(N).")
     F = @MVector zeros(N)
     X = @MMatrix ones(N,N)
-    for i in 1:N
-        p = ps[i]
-        F[i] = fs[i]
-        j = 1
+    for j in 1:N-1
+        p = ps[j]
+        F[j] = fs[j]
+        i = 1
         for i1 in 1:D, i2 in i1:D
-            X[j,i] = p[i1]*p[i2]
-            j = j + 1
+            X[i,j] = p[i1]*p[i2]
+            i = i + 1
         end
-        X[M+1:M+D, i] .= p
+        X[M+1:M+D, j] .= p
     end
     for _ in 1:n
         _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))
