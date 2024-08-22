@@ -9,6 +9,11 @@ function _recursion_qim!(F::MVector{N}, X::MMatrix{N,N}, ps::Vector{<:SVector{D,
         j = j + 1
     end
     X[M+1:M+D, i] .= p
+    return _quadratic(F, X, Val(D))
+end
+
+function _quadratic(F::MVector{N}, X::MMatrix{N,N}, ::Val{D}) where {N, D}
+    M = D*(D+1)÷2
     Y = pinv(X') * F
     a = Y[SOneTo(M)]
     b = SVector{D}(Y[M+1:M+D])

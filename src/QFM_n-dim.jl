@@ -9,6 +9,11 @@ function _recursion_qfm!(F::Vector, X::Matrix, ps::Vector{<:SVector{D, <:Real}},
         j = j + 1
     end
     X[M+1:M+D, i] .= p
+    return _quadratic(F, X, Val(D))
+end
+
+function _quadratic(F::Vector, X::Matrix, ::Val{D}) where D
+    M = D*(D+1)÷2
     Y = pinv(X*X')*(X*F)
     a = Y[SOneTo(M)]
     b = SVector{D}(Y[M+1:M+D])
