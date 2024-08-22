@@ -1,5 +1,4 @@
 using QuadraticOptimizer
-using QuadraticOptimizer: optimize_qim!
 using QuadraticOptimizer: center
 using StaticArrays
 using LinearAlgebra
@@ -60,6 +59,28 @@ Aqua.test_all(QuadraticOptimizer)
     end
 end
 
+@testset "optimize_qim (exact)" begin
+    @testset "D = 1" begin
+        q = Quadratic(SVector(1.2), SVector(4.2), -1.8)
+        f(p) = q(SVector(p[1]))
+        xs_init = [1.2, 0.1, -2.2]
+        ps_init = SVector{1}.(xs_init)
+        xs, _ = optimize_qim(f, xs_init, 1)
+        ps, _ = optimize_qim(f, ps_init, 1)
+        @test ps[end] ≈ center(q)
+        @test xs[end] ≈ center(q)[1]
+    end
+
+    @testset "D = 2" begin
+        q = Quadratic(SVector(1.2, -1.1, -0.8), SVector(4.2, -2.3), 1.7)
+        f(p) = q(p)
+        Random.seed!(42)
+        ps_init = [@SVector rand(2) for _ in 1:6]
+        ps, fs = optimize_qim(f, ps_init, 1)
+        @test ps[end] ≈ center(q)
+    end
+end
+
 @testset "optimize_qim" begin
     @testset "D = 1" begin
         f(p) = sin(p[1]) + p[1]^2/10
@@ -86,6 +107,17 @@ end
     end
 end
 
+@testset "optimize_qfm (exact)" begin
+    @testset "D = 2" begin
+        q = Quadratic(SVector(1.2, -1.1, -0.8), SVector(4.2, -2.3), 1.7)
+        f(p) = q(p)
+        Random.seed!(42)
+        ps_init = [@SVector rand(2) for _ in 1:10]
+        ps, fs = optimize_qfm(f, ps_init, 1)
+        @test ps[end] ≈ center(q)
+    end
+end
+
 @testset "optimize_qfm" begin
     @testset "D = 2" begin
         f(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
@@ -95,6 +127,6 @@ end
         @test length(ps) == 40
         @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-3
         @test norm(ForwardDiff.gradient(f, ps[1])) > 1e-1
-        @test minimum(norm.(ForwardDiff.gradient.(f, ps))) < 1e-3
+        @test minimum(norm.(ForwardDiff.gradient.(f, ps))) < 1e-4
     end
 end
