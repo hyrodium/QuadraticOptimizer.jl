@@ -1,18 +1,4 @@
-function _recursion_qfm!(F::Vector, X::Matrix, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, L::Integer) where {D}
-    i = mod(length(ps), 1:L)
-    M = D*(D+1)÷2
-    p = ps[end]
-    F[i] = fs[end]
-    j = 1
-    for i1 in 1:D, i2 in i1:D
-        X[j,i] = p[i1]*p[i2]
-        j = j + 1
-    end
-    X[M+1:M+D, i] .= p
-    return _quadratic(F, X, Val(D))
-end
-
-function _quadratic(F::Vector, X::Matrix, ::Val{D}) where D
+function _quadratic(X::Matrix, F::Vector, ::Val{D}) where D
     M = D*(D+1)÷2
     Y = pinv(X*X')*(X*F)
     a = Y[SOneTo(M)]
@@ -83,7 +69,8 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
         X[M+1:M+D, i] .= p
     end
     for _ in 1:n
-        q = _recursion_qfm!(F, X, ps, fs, L)
+        _update_XF_at_i!(X, F, ps, fs, mod(length(ps), 1:L))
+        q = _quadratic(X, F, Val(D))
         p = center(q)
         push!(fs,f(p))
         push!(ps,p)
