@@ -69,7 +69,7 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
         X[M+1:M+D, i] .= p
     end
     for _ in 1:n
-        _update_XF_at_i!(X, F, ps, fs, mod(length(ps), 1:L))
+        _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:L))
         q = _quadratic(X, F, Val(D))
         p = center(q)
         push!(fs,f(p))

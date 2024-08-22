@@ -1,13 +1,13 @@
-function _update_XF_at_i!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, i::Integer) where {D}
+function _update_XF_at_j!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, j::Integer) where {D}
     M = D*(D+1)÷2
     p = ps[end]
-    F[i] = fs[end]
-    j = 1
+    F[j] = fs[end]
+    i = 1
     for i1 in 1:D, i2 in i1:D
-        X[j,i] = p[i1]*p[i2]
-        j = j + 1
+        X[i,j] = p[i1]*p[i2]
+        i = i + 1
     end
-    X[M+1:M+D, i] .= p
+    X[M+1:M+D, j] .= p
     return X, F
 end
 
@@ -78,7 +78,7 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
         X[M+1:M+D, i] .= p
     end
     for _ in 1:n
-        _update_XF_at_i!(X, F, ps, fs, mod(length(ps), 1:N))
+        _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))
         q = _quadratic(X, F, Val(D))
         p = center(q)
         push!(fs,f(p))
