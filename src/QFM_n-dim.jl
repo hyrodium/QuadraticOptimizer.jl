@@ -1,8 +1,8 @@
 function _quadratic(X::AbstractMatrix, F::AbstractVector, ::Val{D}) where D
-    M = D*(D+1)÷2
+    L = D*(D+1)÷2
     Y = pinv(X*X')*(X*F)
-    a = Y[SOneTo(M)]
-    b = SVector{D}(Y[M+1:M+D])
+    a = Y[SOneTo(L)]
+    b = SVector{D}(Y[L+1:L+D])
     c = Y[end]
     return Quadratic(a,b,c)
 end
@@ -52,13 +52,13 @@ julia> optimize_qfm!(f, ps, fs, 20);
 ```
 """
 function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer) where D
-    L = length(ps)
-    M = D*(D+1)÷2
-    N = D+M+1
-    length(fs) == L ≥ N || error("The length of initial values should be larger than $(N).")
-    F = zeros(L)
-    X = ones(N, L)
-    for j in 1:L-1
+    L = D*(D+1)÷2
+    M = D+L+1
+    N = length(ps)
+    length(fs) == N ≥ M || error("The length of initial values should be larger than $(M).")
+    F = zeros(N)
+    X = ones(M, N)
+    for j in 1:N-1
         p = ps[j]
         F[j] = fs[j]
         i = 1
@@ -66,10 +66,10 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
             X[i,j] = p[i1]*p[i2]
             i = i + 1
         end
-        X[M+1:M+D, j] .= p
+        X[L+1:L+D, j] .= p
     end
     for _ in 1:n
-        _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:L))
+        _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))
         q = _quadratic(X, F, Val(D))
         p = center(q)
         push!(fs,f(p))

@@ -1,5 +1,5 @@
 function _update_XF_at_j!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, j::Integer) where {D}
-    M = D*(D+1)÷2
+    L = D*(D+1)÷2
     p = ps[end]
     F[j] = fs[end]
     i = 1
@@ -7,15 +7,15 @@ function _update_XF_at_j!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVe
         X[i,j] = p[i1]*p[i2]
         i = i + 1
     end
-    X[M+1:M+D, j] .= p
+    X[L+1:L+D, j] .= p
     return X, F
 end
 
 function _quadratic(X::StaticMatrix{N,N}, F::StaticVector{N}, ::Val{D}) where {N, D}
-    M = D*(D+1)÷2
+    L = D*(D+1)÷2
     Y = pinv(X') * F
-    a = Y[SOneTo(M)]
-    b = SVector{D}(Y[M+1:M+D])
+    a = Y[SOneTo(L)]
+    b = SVector{D}(Y[L+1:L+D])
     c = Y[end]
     return Quadratic(a,b,c)
 end
@@ -61,13 +61,13 @@ julia> optimize_qim!(f, ps, fs, 20);
 ```
 """
 function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer) where D
-    L = length(ps)
-    M = D*(D+1)÷2
-    N = D+M+1
-    length(fs) == L == N || error("The length of initial values should be equal to $(N).")
-    F = @MVector zeros(N)
-    X = @MMatrix ones(N,N)
-    for j in 1:N-1
+    L = D*(D+1)÷2
+    M = D+L+1
+    N = length(ps)
+    length(fs) == N == M || error("The length of initial values should be equal to $(M).")
+    F = @MVector zeros(M)
+    X = @MMatrix ones(M,M)
+    for j in 1:M-1
         p = ps[j]
         F[j] = fs[j]
         i = 1
@@ -75,10 +75,10 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
             X[i,j] = p[i1]*p[i2]
             i = i + 1
         end
-        X[M+1:M+D, j] .= p
+        X[L+1:L+D, j] .= p
     end
     for _ in 1:n
-        _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))
+        _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:M))
         q = _quadratic(X, F, Val(D))
         p = center(q)
         push!(fs,f(p))

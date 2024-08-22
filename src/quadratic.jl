@@ -1,15 +1,15 @@
-struct Quadratic{D, M, T<:Real}
-    a::SVector{M, T}
+struct Quadratic{D, L, T<:Real}
+    a::SVector{L, T}
     b::SVector{D, T}
     c::T
 end
 
-function Quadratic(a::StaticVector{M,Ta},b::StaticVector{D, Tb},c::Tc) where {M, D, Ta<:Real, Tb<:Real, Tc <: Real}
+function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L, D, Ta<:Real, Tb<:Real, Tc <: Real}
     T = promote_type(Ta, Tb, Tc)
-    Quadratic{D,M,T}(SVector{M,T}(a), SVector{D,T}(b), T(c))
+    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
-function center(q::Quadratic{D,M}) where {D,M}
+function center(q::Quadratic{D}) where {D}
     a = q.a
     b = q.b
 
@@ -28,7 +28,7 @@ function center(q::Quadratic{D,M}) where {D,M}
     return -A\b
 end
 
-function (q::Quadratic{D,M,T})(p) where {D,M,T}
+function (q::Quadratic{D,L,T})(p) where {D,L,T}
     a = q.a
     b = q.b
     c = q.c
