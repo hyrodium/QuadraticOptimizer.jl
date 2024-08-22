@@ -1,12 +1,3 @@
-function _quadratic(X::AbstractMatrix, F::AbstractVector, ::Val{D}) where D
-    L = D*(D+1)÷2
-    Y = pinv(X*X')*(X*F)
-    a = Y[SOneTo(L)]
-    b = SVector{D}(Y[L+1:L+D])
-    c = Y[end]
-    return Quadratic(a,b,c)
-end
-
 """
     optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
 
@@ -56,18 +47,9 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
     M = D+L+1
     N = length(ps)
     length(fs) == N ≥ M || error("The length of initial values should be larger than $(M).")
-    F = zeros(N)
     X = ones(M, N)
-    for j in 1:N-1
-        p = ps[j]
-        F[j] = fs[j]
-        i = 1
-        for i1 in 1:D, i2 in i1:D
-            X[i,j] = p[i1]*p[i2]
-            i = i + 1
-        end
-        X[L+1:L+D, j] .= p
-    end
+    F = zeros(N)
+    _initialize_XF!(X, F, ps, fs)
     for _ in 1:n
         _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))
         q = _quadratic(X, F, Val(D))

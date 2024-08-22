@@ -1,25 +1,3 @@
-function _update_XF_at_j!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, j::Integer) where {D}
-    L = D*(D+1)÷2
-    p = ps[end]
-    F[j] = fs[end]
-    i = 1
-    for i1 in 1:D, i2 in i1:D
-        X[i,j] = p[i1]*p[i2]
-        i = i + 1
-    end
-    X[L+1:L+D, j] .= p
-    return X, F
-end
-
-function _quadratic(X::StaticMatrix{N,N}, F::StaticVector{N}, ::Val{D}) where {N, D}
-    L = D*(D+1)÷2
-    Y = pinv(X') * F
-    a = Y[SOneTo(L)]
-    b = SVector{D}(Y[L+1:L+D])
-    c = Y[end]
-    return Quadratic(a,b,c)
-end
-
 """
     optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
 
@@ -65,18 +43,9 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
     M = D+L+1
     N = length(ps)
     length(fs) == N == M || error("The length of initial values should be equal to $(M).")
+    X = @MMatrix ones(M, M)
     F = @MVector zeros(M)
-    X = @MMatrix ones(M,M)
-    for j in 1:M-1
-        p = ps[j]
-        F[j] = fs[j]
-        i = 1
-        for i1 in 1:D, i2 in i1:D
-            X[i,j] = p[i1]*p[i2]
-            i = i + 1
-        end
-        X[L+1:L+D, j] .= p
-    end
+    _initialize_XF!(X, F, ps, fs)
     for _ in 1:n
         _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:M))
         q = _quadratic(X, F, Val(D))

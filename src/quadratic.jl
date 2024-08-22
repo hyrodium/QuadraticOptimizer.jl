@@ -44,3 +44,50 @@ function (q::Quadratic{D,L,T})(p) where {D,L,T}
     y += c
     return y
 end
+
+function _update_XF_at_j!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, j::Integer) where {D}
+    L = D*(D+1)÷2
+    p = ps[end]
+    F[j] = fs[end]
+    i = 1
+    for i1 in 1:D, i2 in i1:D
+        X[i,j] = p[i1]*p[i2]
+        i = i + 1
+    end
+    X[L+1:L+D, j] .= p
+    return X, F
+end
+
+function _initialize_XF!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVector{D, <:Real}}, fs) where {D}
+    L = D*(D+1)÷2
+    M, N = size(X)
+    for j in 1:N-1
+        p = ps[j]
+        F[j] = fs[j]
+        i = 1
+        for i1 in 1:D, i2 in i1:D
+            X[i,j] = p[i1]*p[i2]
+            i = i + 1
+        end
+        X[L+1:L+D, j] .= p
+    end
+    return X, F
+end
+
+function _quadratic(X::StaticMatrix{N,N}, F::StaticVector{N}, ::Val{D}) where {N, D}
+    L = D*(D+1)÷2
+    Y = pinv(X') * F
+    a = Y[SOneTo(L)]
+    b = SVector{D}(Y[L+1:L+D])
+    c = Y[end]
+    return Quadratic(a,b,c)
+end
+
+function _quadratic(X::AbstractMatrix, F::AbstractVector, ::Val{D}) where {D}
+    L = D*(D+1)÷2
+    Y = pinv(X*X')*(X*F)
+    a = Y[SOneTo(L)]
+    b = SVector{D}(Y[L+1:L+D])
+    c = Y[end]
+    return Quadratic(a,b,c)
+end
