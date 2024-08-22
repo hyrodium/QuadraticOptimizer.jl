@@ -9,6 +9,10 @@ function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L
     Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
+function Base.:≈(q1::Quadratic, q2::Quadratic)
+    (q1.a ≈ q2.a) & (q1.b ≈ q2.b) & (q1.c ≈ q2.c)
+end
+
 function center(q::Quadratic{D}) where {D}
     a = q.a
     b = q.b

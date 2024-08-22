@@ -1,5 +1,7 @@
 using QuadraticOptimizer
 using QuadraticOptimizer: center
+using QuadraticOptimizer: interpolation
+using QuadraticOptimizer: fitting
 using StaticArrays
 using LinearAlgebra
 using Random
@@ -134,4 +136,16 @@ end
         @test ps_qim ≈ ps_qfm  atol=1e-5
         @test fs_qim ≈ fs_qfm
     end
+end
+
+@testset "interpolation, fitting" begin
+    ps = [@SVector rand(2) for _ in 1:6]
+    fs = e2.(ps)
+    @test interpolation(ps, fs) ≈ q2
+    @test fitting(ps, fs) ≈ q2
+
+    ps = [@SVector rand(2) for _ in 1:10]
+    fs = e2.(ps)
+    @test_throws Exception interpolation(ps, fs)
+    @test fitting(ps, fs) ≈ q2
 end
