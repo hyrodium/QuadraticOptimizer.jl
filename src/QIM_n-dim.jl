@@ -1,3 +1,15 @@
+function interpolation(ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}) where D
+    L = D*(D+1)÷2
+    M = D+L+1
+    N = length(ps)
+    length(fs) == N == M || error("The length of initial values should be equal to $(M).")
+    X = @MMatrix ones(M, M)
+    F = @MVector zeros(M)
+    _initialize_XF!(X, F, ps, fs)
+    _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:M))
+    return _quadratic(X, F, Val(D))
+end
+
 """
     optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
 
