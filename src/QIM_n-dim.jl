@@ -1,22 +1,3 @@
-function _recursion_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, F::MVector{N}, X::MMatrix{N,N}) where {D, N}
-    i = mod(length(ps), 1:N)
-    M = D*(D+1)÷2
-    p = ps[end]
-    F[i] = fs[end]
-    j = 1
-    for i1 in 1:D, i2 in i1:D
-        X[j,i] = p[i1]*p[i2]
-        j = j + 1
-    end
-    X[M+1:M+D, i] .= p
-    Y = pinv(X') * F
-    a = Y[SOneTo(M)]
-    b = SVector{D}(Y[M+1:M+D])
-    c = Y[end]
-    q = Quadratic(a,b,c)
-    return center(q)
-end
-
 """
     optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
 
@@ -58,26 +39,19 @@ julia> optimize_qim!(f, ps, fs, 20);
 ```
 """
 function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer) where D
-    L = length(ps)
-    M = D*(D+1)÷2
-    N = D+M+1
-    length(fs) == L == N || error("The length of initial values should be equal to $(N).")
-    F = @MVector zeros(N)
-    X = @MMatrix ones(N,N)
-    for i in 1:N
-        p = ps[i]
-        F[i] = fs[i]
-        j = 1
-        for i1 in 1:D, i2 in i1:D
-            X[j,i] = p[i1]*p[i2]
-            j = j + 1
-        end
-        X[M+1:M+D, i] .= p
-    end
+    L = D*(D+1)÷2
+    M = D+L+1
+    N = length(ps)
+    length(fs) == N == M || error("The length of initial values should be equal to $(M).")
+    X = @MMatrix ones(M, M)
+    F = @MVector zeros(M)
+    _initialize_XF!(X, F, ps, fs)
     for _ in 1:n
-        p = _recursion_qim!(f, ps, fs, F, X)
-        push!(ps,p)
+        _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:M))
+        q = _quadratic(X, F, Val(D))
+        p = center(q)
         push!(fs,f(p))
+        push!(ps,p)
     end
     return ps, fs
 end

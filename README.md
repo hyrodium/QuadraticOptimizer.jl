@@ -36,7 +36,7 @@ julia> plot!(pl, xs, fs; color=:blue3, label="iteration")
 julia> scatter!(pl, xs_init, f.(xs_init); color=:blue3, label="initial points")
 ```
 
-![](docs/src/img/1-dim.png)
+![](docs/src/img/qim-1-dim.png)
 
 ## 2-dim example
 
@@ -60,7 +60,7 @@ plot!([p[1] for p in ps], [p[2] for p in ps]; color=:blue2, label="iteration")
 scatter!([p[1] for p in ps_init], [p[2] for p in ps_init], label="initial points")
 ```
 
-![](docs/src/img/2-dim.png)
+![](docs/src/img/qim-2-dim.png)
 
 ```julia
 using QuadraticOptimizer
@@ -80,3 +80,5 @@ plot(xs_plot, ys_plot, zs_plot; levels=-40:40, label="objective")
 plot!([p[1] for p in ps], [p[2] for p in ps]; color=:blue2, label="iteration")
 scatter!([p[1] for p in ps_init], [p[2] for p in ps_init], label="initial points")
 ```
+
+![](docs/src/img/qfm-2-dim.png)
