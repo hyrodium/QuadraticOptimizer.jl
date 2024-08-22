@@ -62,8 +62,8 @@ end
 f1(p) = sin(p[1]) + p[1]^2/10
 f2(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
 q1 = Quadratic(SVector(1.2), SVector(4.2), -1.8)
-e1(p) = q1(SVector(p[1]))
 q2 = Quadratic(SVector(1.2, -1.1, -0.8), SVector(4.2, -2.3), 1.7)
+e1(p) = q1(SVector(p[1]))
 e2(p) = q2(p)
 
 @testset "exact" begin
@@ -89,7 +89,7 @@ e2(p) = q2(p)
     end
 end
 
-@testset "optimize_qim" begin
+@testset "QIM" begin
     @testset "D = 1" begin
         xs_init = [1.2, 0.1, -2.2]
         ps_init = SVector{1}.(xs_init)
@@ -113,7 +113,7 @@ end
     end
 end
 
-@testset "optimize_qfm" begin
+@testset "QFM" begin
     @testset "D = 2" begin
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:10]
@@ -122,5 +122,16 @@ end
         @test norm(ForwardDiff.gradient(f2, ps[end])) < 1e-3
         @test norm(ForwardDiff.gradient(f2, ps[1])) > 1e-1
         @test minimum(norm.(ForwardDiff.gradient.(f2, ps))) < 1e-4
+    end
+end
+
+@testset "QIM-QFM" begin
+    @testset "D = 2" begin
+        Random.seed!(42)
+        ps_init = [@SVector rand(2) for _ in 1:6]
+        ps_qim, fs_qim = optimize_qim(f2, ps_init, 10)
+        ps_qfm, fs_qfm = optimize_qfm(f2, ps_init, 10)
+        @test ps_qim ≈ ps_qfm  atol=1e-5
+        @test fs_qim ≈ fs_qfm
     end
 end
