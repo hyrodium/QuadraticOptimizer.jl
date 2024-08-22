@@ -1,3 +1,15 @@
+function fitting(ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}) where D
+    L = D*(D+1)÷2
+    M = D+L+1
+    N = length(ps)
+    length(fs) == N ≥ M || error("The length of initial values should be larger than $(M).")
+    X = ones(M, N)
+    F = zeros(N)
+    _initialize_XF!(X, F, ps, fs)
+    _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))
+    return _quadratic(X, F, Val(D))
+end
+
 """
     optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
 
