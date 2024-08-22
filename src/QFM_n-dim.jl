@@ -58,15 +58,15 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
     length(fs) == L ≥ N || error("The length of initial values should be larger than $(N).")
     F = zeros(L)
     X = ones(N, L)
-    for i in 1:N-1
-        p = ps[i]
-        F[i] = fs[i]
-        j = 1
+    for j in 1:L-1
+        p = ps[j]
+        F[j] = fs[j]
+        i = 1
         for i1 in 1:D, i2 in i1:D
             X[i,j] = p[i1]*p[i2]
-            j = j + 1
+            i = i + 1
         end
-        X[M+1:M+D, i] .= p
+        X[M+1:M+D, j] .= p
     end
     for _ in 1:n
         _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:L))
