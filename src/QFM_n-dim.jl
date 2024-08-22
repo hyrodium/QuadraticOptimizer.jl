@@ -1,7 +1,7 @@
-function _recursion_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, F::Vector, X::Matrix, L::Integer) where {D}
+function _recursion_qfm!(F::Vector, X::Matrix, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, L::Integer) where {D}
+    i = mod(length(ps), 1:L)
     M = D*(D+1)÷2
     p = ps[end]
-    i = mod(length(ps), 1:L)
     F[i] = fs[end]
     j = 1
     for i1 in 1:D, i2 in i1:D
@@ -13,8 +13,7 @@ function _recursion_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}
     a = Y[SOneTo(M)]
     b = SVector{D}(Y[M+1:M+D])
     c = Y[end]
-    q = Quadratic(a,b,c)
-    return center(q)
+    return Quadratic(a,b,c)
 end
 
 """
@@ -79,9 +78,10 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, 
         X[M+1:M+D, i] .= p
     end
     for _ in 1:n
-        p = _recursion_qfm!(f, ps, fs, F, X, L)
-        push!(ps,p)
+        q = _recursion_qfm!(F, X, ps, fs, L)
+        p = center(q)
         push!(fs,f(p))
+        push!(ps,p)
     end
     return ps, fs
 end
