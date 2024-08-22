@@ -59,74 +59,68 @@ Aqua.test_all(QuadraticOptimizer)
     end
 end
 
-@testset "optimize_qim (exact)" begin
+f1(p) = sin(p[1]) + p[1]^2/10
+f2(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
+q1 = Quadratic(SVector(1.2), SVector(4.2), -1.8)
+e1(p) = q1(SVector(p[1]))
+q2 = Quadratic(SVector(1.2, -1.1, -0.8), SVector(4.2, -2.3), 1.7)
+e2(p) = q2(p)
+
+@testset "exact" begin
     @testset "D = 1" begin
-        q = Quadratic(SVector(1.2), SVector(4.2), -1.8)
-        f(p) = q(SVector(p[1]))
         xs_init = [1.2, 0.1, -2.2]
         ps_init = SVector{1}.(xs_init)
-        xs, _ = optimize_qim(f, xs_init, 1)
-        ps, _ = optimize_qim(f, ps_init, 1)
-        @test ps[end] ≈ center(q)
-        @test xs[end] ≈ center(q)[1]
+        xs, _ = optimize_qim(e1, xs_init, 1)
+        ps, _ = optimize_qim(e1, ps_init, 1)
+        @test ps[end] ≈ center(q1)
+        @test xs[end] ≈ center(q1)[1]
     end
 
     @testset "D = 2" begin
-        q = Quadratic(SVector(1.2, -1.1, -0.8), SVector(4.2, -2.3), 1.7)
-        f(p) = q(p)
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:6]
-        ps, fs = optimize_qim(f, ps_init, 1)
-        @test ps[end] ≈ center(q)
+        ps, fs = optimize_qim(e2, ps_init, 1)
+        @test ps[end] ≈ center(q2)
+
+        Random.seed!(42)
+        ps_init = [@SVector rand(2) for _ in 1:10]
+        ps, fs = optimize_qfm(e2, ps_init, 1)
+        @test ps[end] ≈ center(q2)
     end
 end
 
 @testset "optimize_qim" begin
     @testset "D = 1" begin
-        f(p) = sin(p[1]) + p[1]^2/10
         xs_init = [1.2, 0.1, -2.2]
         ps_init = SVector{1}.(xs_init)
-        xs, _ = optimize_qim(f, xs_init, 6)
-        ps, _ = optimize_qim(f, ps_init, 6)
+        xs, _ = optimize_qim(f1, xs_init, 6)
+        ps, _ = optimize_qim(f1, ps_init, 6)
         @test all([p[1] for p in ps] .≈ xs)
-        @test abs(ForwardDiff.derivative(f, xs[end])) < 1e-6
-        @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-6
-        @test minimum(norm.(ForwardDiff.derivative.(f, xs))) < 1e-6
-        @test minimum(norm.(ForwardDiff.gradient.(f, ps))) < 1e-5
+        @test abs(ForwardDiff.derivative(f1, xs[end])) < 1e-6
+        @test norm(ForwardDiff.gradient(f1, ps[end])) < 1e-6
+        @test minimum(norm.(ForwardDiff.derivative.(f1, xs))) < 1e-6
+        @test minimum(norm.(ForwardDiff.gradient.(f1, ps))) < 1e-5
     end
 
     @testset "D = 2" begin
-        f(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:6]
-        ps, fs = optimize_qim(f, ps_init, 20)
+        ps, fs = optimize_qim(f2, ps_init, 20)
         @test length(ps) == 26
-        @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-3
-        @test norm(ForwardDiff.gradient(f, ps[1])) > 1e-1
-        @test minimum(norm.(ForwardDiff.gradient.(f, ps))) < 1e-6
-    end
-end
-
-@testset "optimize_qfm (exact)" begin
-    @testset "D = 2" begin
-        q = Quadratic(SVector(1.2, -1.1, -0.8), SVector(4.2, -2.3), 1.7)
-        f(p) = q(p)
-        Random.seed!(42)
-        ps_init = [@SVector rand(2) for _ in 1:10]
-        ps, fs = optimize_qfm(f, ps_init, 1)
-        @test ps[end] ≈ center(q)
+        @test norm(ForwardDiff.gradient(f2, ps[end])) < 1e-3
+        @test norm(ForwardDiff.gradient(f2, ps[1])) > 1e-1
+        @test minimum(norm.(ForwardDiff.gradient.(f2, ps))) < 1e-6
     end
 end
 
 @testset "optimize_qfm" begin
     @testset "D = 2" begin
-        f(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:10]
-        ps, fs = optimize_qfm(f, ps_init, 30)
+        ps, fs = optimize_qfm(f2, ps_init, 30)
         @test length(ps) == 40
-        @test norm(ForwardDiff.gradient(f, ps[end])) < 1e-3
-        @test norm(ForwardDiff.gradient(f, ps[1])) > 1e-1
-        @test minimum(norm.(ForwardDiff.gradient.(f, ps))) < 1e-4
+        @test norm(ForwardDiff.gradient(f2, ps[end])) < 1e-3
+        @test norm(ForwardDiff.gradient(f2, ps[1])) > 1e-1
+        @test minimum(norm.(ForwardDiff.gradient.(f2, ps))) < 1e-4
     end
 end
