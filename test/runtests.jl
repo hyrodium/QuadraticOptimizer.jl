@@ -21,7 +21,7 @@ Aqua.test_all(QuadraticOptimizer)
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
-        @test -(2q+(+q)) ≈ 3(-q) == -3q
+        @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
         @test iszero(Quadratic{D}(zeros(1), zeros(1), 0))
         @test iszero(Quadratic{D,L}(zeros(1), zeros(1), 0))
 
@@ -44,7 +44,7 @@ Aqua.test_all(QuadraticOptimizer)
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
-        @test -(2q+(+q)) ≈ 3(-q) == -3q
+        @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
         @test iszero(Quadratic{D}(zeros(3), zeros(2), 0))
         @test iszero(Quadratic{D,L}(zeros(3), zeros(2), 0))
 
@@ -67,7 +67,7 @@ Aqua.test_all(QuadraticOptimizer)
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
-        @test -(2q+(+q)) ≈ 3(-q) == -3q
+        @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
         @test iszero(Quadratic{D}(zeros(6), zeros(3), 0))
         @test iszero(Quadratic{D,L}(zeros(6), zeros(3), 0))
 
