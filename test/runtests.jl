@@ -21,6 +21,7 @@ Aqua.test_all(QuadraticOptimizer)
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
+        @test -(2q+(+q)) ≈ 3(-q) == -3q
         @test iszero(Quadratic{D}(zeros(1), zeros(1), 0))
         @test iszero(Quadratic{D,L}(zeros(1), zeros(1), 0))
 
@@ -28,6 +29,7 @@ Aqua.test_all(QuadraticOptimizer)
             p = @SVector rand(1)
             @test q(center(q) + p) ≈ q(center(q) - p)
             @test (-q)(p) == -(q(p))
+            @test (q+2q)(p) ≈ 3(q(p))
             x₁, = p
             @test q(p) ≈ a[1]*x₁*x₁ + b[1]*x₁ + c
         end
@@ -42,6 +44,7 @@ Aqua.test_all(QuadraticOptimizer)
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
+        @test -(2q+(+q)) ≈ 3(-q) == -3q
         @test iszero(Quadratic{D}(zeros(3), zeros(2), 0))
         @test iszero(Quadratic{D,L}(zeros(3), zeros(2), 0))
 
@@ -49,6 +52,7 @@ Aqua.test_all(QuadraticOptimizer)
             p = @SVector rand(2)
             @test q(center(q) + p) ≈ q(center(q) - p)
             @test (-q)(p) == -(q(p))
+            @test (q+2q)(p) ≈ 3(q(p))
             x₁, x₂ = p
             @test q(p) ≈ a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₂*x₂ + b[1]*x₁ + b[2]*x₂ + c
         end
@@ -63,6 +67,7 @@ Aqua.test_all(QuadraticOptimizer)
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
+        @test -(2q+(+q)) ≈ 3(-q) == -3q
         @test iszero(Quadratic{D}(zeros(6), zeros(3), 0))
         @test iszero(Quadratic{D,L}(zeros(6), zeros(3), 0))
 
@@ -70,6 +75,7 @@ Aqua.test_all(QuadraticOptimizer)
             p = @SVector rand(3)
             @test q(center(q) + p) ≈ q(center(q) - p)
             @test (-q)(p) == -(q(p))
+            @test (q+2q)(p) ≈ 3(q(p))
             x₁, x₂, x₃ = p
             @test q(p) ≈
             (
