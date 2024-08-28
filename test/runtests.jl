@@ -182,7 +182,7 @@ end
     ps = [@SVector rand(2) for _ in 1:10000]
     fs = e2.(ps) + randn(10000)/1000
     @test_throws Exception interpolation(ps, fs)
-    @test fitting(ps, fs) ≉ q2
+    @test !(fitting(ps, fs) ≈ q2)
     @test norm((fitting(ps, fs) - q2).a) < 1e-3
     @test norm((fitting(ps, fs) - q2).b) < 1e-3
     @test norm((fitting(ps, fs) - q2).c) < 1e-3
