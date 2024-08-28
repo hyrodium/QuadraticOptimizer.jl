@@ -24,6 +24,10 @@ Aqua.test_all(QuadraticOptimizer)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
         @test iszero(Quadratic{D}(zeros(1), zeros(1), 0))
         @test iszero(Quadratic{D,L}(zeros(1), zeros(1), 0))
+        @test isfinite(Quadratic{D,L}(zeros(1), zeros(1), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(1) ./ zeros(1), zeros(1), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(1), zeros(1) ./ zeros(1), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(1), zeros(1), 0 / 0))
 
         for _ in 1:10
             p = @SVector rand(1)
@@ -47,6 +51,10 @@ Aqua.test_all(QuadraticOptimizer)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
         @test iszero(Quadratic{D}(zeros(3), zeros(2), 0))
         @test iszero(Quadratic{D,L}(zeros(3), zeros(2), 0))
+        @test isfinite(Quadratic{D,L}(zeros(3), zeros(2), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(3) ./ zeros(3), zeros(2), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(3), zeros(2) ./ zeros(2), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(3), zeros(2), 0 / 0))
 
         for _ in 1:10
             p = @SVector rand(2)
@@ -70,6 +78,10 @@ Aqua.test_all(QuadraticOptimizer)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
         @test iszero(Quadratic{D}(zeros(6), zeros(3), 0))
         @test iszero(Quadratic{D,L}(zeros(6), zeros(3), 0))
+        @test isfinite(Quadratic{D,L}(zeros(6), zeros(3), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(6) ./ zeros(6), zeros(3), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(6), zeros(3) ./ zeros(3), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(6), zeros(3), 0 / 0))
 
         for _ in 1:10
             p = @SVector rand(3)
