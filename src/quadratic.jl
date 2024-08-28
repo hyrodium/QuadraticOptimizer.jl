@@ -29,7 +29,7 @@ function Base.iszero(q::Quadratic)
 end
 
 function Base.isfinite(q::Quadratic)
-    return isfinite(q.a) & isfinite(q.b) & isfinite(q.c)
+    return all(isfinite.(q.a)) & all(isfinite.(q.b)) & isfinite(q.c)
 end
 
 function Base.:+(q1::Quadratic, q2::Quadratic)
