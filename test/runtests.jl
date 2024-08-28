@@ -14,15 +14,15 @@ Aqua.test_all(QuadraticOptimizer)
 @testset "Quadratic type" begin
     @testset "D = 1" begin
         D = 1
-        M = D*(D+1)÷2
-        a = SVector{M}(rand(M))
+        L = D*(D+1)÷2
+        a = SVector{L}(rand(L))
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
         @test iszero(Quadratic{D}(zeros(1), zeros(1), 0))
-        @test iszero(Quadratic{D,M}(zeros(1), zeros(1), 0))
+        @test iszero(Quadratic{D,L}(zeros(1), zeros(1), 0))
 
         for _ in 1:10
             p = @SVector rand(1)
@@ -35,15 +35,15 @@ Aqua.test_all(QuadraticOptimizer)
 
     @testset "D = 2" begin
         D = 2
-        M = D*(D+1)÷2
-        a = SVector{M}(rand(M))
+        L = D*(D+1)÷2
+        a = SVector{L}(rand(L))
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
         @test iszero(Quadratic{D}(zeros(3), zeros(2), 0))
-        @test iszero(Quadratic{D,M}(zeros(3), zeros(2), 0))
+        @test iszero(Quadratic{D,L}(zeros(3), zeros(2), 0))
 
         for _ in 1:10
             p = @SVector rand(2)
@@ -56,15 +56,15 @@ Aqua.test_all(QuadraticOptimizer)
 
     @testset "D = 3" begin
         D = 3
-        M = D*(D+1)÷2
-        a = SVector{M}(rand(M))
+        L = D*(D+1)÷2
+        a = SVector{L}(rand(L))
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
         @test !iszero(q)
         @test iszero(q-q)
         @test iszero(Quadratic{D}(zeros(6), zeros(3), 0))
-        @test iszero(Quadratic{D,M}(zeros(6), zeros(3), 0))
+        @test iszero(Quadratic{D,L}(zeros(6), zeros(3), 0))
 
         for _ in 1:10
             p = @SVector rand(3)
