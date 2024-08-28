@@ -20,8 +20,11 @@ Aqua.test_all(QuadraticOptimizer)
         c = rand()
         q = Quadratic(a,b,c)
 
-        x₁ = rand()
-        @test q([x₁]) ≈ a[1]*x₁*x₁ + b[1]*x₁ + c
+        for _ in 1:10
+            x₁ = rand()
+            @test q([x₁]) ≈ a[1]*x₁*x₁ + b[1]*x₁ + c
+            @test q(center(q) + [x₁]) ≈ q(center(q) - [x₁])
+        end
     end
 
     @testset "D = 2" begin
@@ -32,9 +35,12 @@ Aqua.test_all(QuadraticOptimizer)
         c = rand()
         q = Quadratic(a,b,c)
 
-        x₁ = rand()
-        x₂ = rand()
-        @test q([x₁, x₂]) ≈ a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₂*x₂ + b[1]*x₁ + b[2]*x₂ + c
+        for _ in 1:10
+            x₁ = rand()
+            x₂ = rand()
+            @test q([x₁, x₂]) ≈ a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₂*x₂ + b[1]*x₁ + b[2]*x₂ + c
+            @test q(center(q) + [x₁, x₂]) ≈ q(center(q) - [x₁, x₂])
+        end
     end
 
     @testset "D = 3" begin
@@ -45,19 +51,22 @@ Aqua.test_all(QuadraticOptimizer)
         c = rand()
         q = Quadratic(a,b,c)
 
-        x₁ = rand()
-        x₂ = rand()
-        x₃ = rand()
-        @test q([x₁, x₂, x₃]) ≈
-        (
-            + a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₁*x₃
-                         + a[4]*x₂*x₂ + a[5]*x₂*x₃
-                                      + a[6]*x₃*x₃
-            + b[1]*x₁
-            + b[2]*x₂
-            + b[3]*x₃
-            + c
-        )
+        for _ in 1:10
+            x₁ = rand()
+            x₂ = rand()
+            x₃ = rand()
+            @test q([x₁, x₂, x₃]) ≈
+            (
+                + a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₁*x₃
+                             + a[4]*x₂*x₂ + a[5]*x₂*x₃
+                                          + a[6]*x₃*x₃
+                + b[1]*x₁
+                + b[2]*x₂
+                + b[3]*x₃
+                + c
+            )
+            @test q(center(q) + [x₁, x₂, x₃]) ≈ q(center(q) - [x₁, x₂, x₃])
+        end
     end
 end
 
