@@ -14,50 +14,92 @@ Aqua.test_all(QuadraticOptimizer)
 @testset "Quadratic type" begin
     @testset "D = 1" begin
         D = 1
-        M = D*(D+1)÷2
-        a = SVector{M}(rand(M))
+        L = D*(D+1)÷2
+        a = SVector{L}(rand(L))
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        @test !iszero(q)
+        @test iszero(q-q)
+        @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
+        @test iszero(Quadratic{D}(zeros(1), zeros(1), 0))
+        @test iszero(Quadratic{D,L}(zeros(1), zeros(1), 0))
+        @test isfinite(Quadratic{D,L}(zeros(1), zeros(1), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(1) ./ zeros(1), zeros(1), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(1), zeros(1) ./ zeros(1), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(1), zeros(1), 0 / 0))
 
-        x₁ = rand()
-        @test q([x₁]) ≈ a[1]*x₁*x₁ + b[1]*x₁ + c
+        for _ in 1:10
+            p = @SVector rand(1)
+            @test q(center(q) + p) ≈ q(center(q) - p)
+            @test (-q)(p) == -(q(p))
+            @test (q+2q)(p) ≈ 3(q(p))
+            x₁, = p
+            @test q(p) ≈ a[1]*x₁*x₁ + b[1]*x₁ + c
+        end
     end
 
     @testset "D = 2" begin
         D = 2
-        M = D*(D+1)÷2
-        a = SVector{M}(rand(M))
+        L = D*(D+1)÷2
+        a = SVector{L}(rand(L))
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        @test !iszero(q)
+        @test iszero(q-q)
+        @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
+        @test iszero(Quadratic{D}(zeros(3), zeros(2), 0))
+        @test iszero(Quadratic{D,L}(zeros(3), zeros(2), 0))
+        @test isfinite(Quadratic{D,L}(zeros(3), zeros(2), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(3) ./ zeros(3), zeros(2), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(3), zeros(2) ./ zeros(2), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(3), zeros(2), 0 / 0))
 
-        x₁ = rand()
-        x₂ = rand()
-        @test q([x₁, x₂]) ≈ a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₂*x₂ + b[1]*x₁ + b[2]*x₂ + c
+        for _ in 1:10
+            p = @SVector rand(2)
+            @test q(center(q) + p) ≈ q(center(q) - p)
+            @test (-q)(p) == -(q(p))
+            @test (q+2q)(p) ≈ 3(q(p))
+            x₁, x₂ = p
+            @test q(p) ≈ a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₂*x₂ + b[1]*x₁ + b[2]*x₂ + c
+        end
     end
 
     @testset "D = 3" begin
         D = 3
-        M = D*(D+1)÷2
-        a = SVector{M}(rand(M))
+        L = D*(D+1)÷2
+        a = SVector{L}(rand(L))
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        @test !iszero(q)
+        @test iszero(q-q)
+        @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
+        @test iszero(Quadratic{D}(zeros(6), zeros(3), 0))
+        @test iszero(Quadratic{D,L}(zeros(6), zeros(3), 0))
+        @test isfinite(Quadratic{D,L}(zeros(6), zeros(3), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(6) ./ zeros(6), zeros(3), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(6), zeros(3) ./ zeros(3), 0))
+        @test !isfinite(Quadratic{D,L}(zeros(6), zeros(3), 0 / 0))
 
-        x₁ = rand()
-        x₂ = rand()
-        x₃ = rand()
-        @test q([x₁, x₂, x₃]) ≈
-        (
-            + a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₁*x₃
-                         + a[4]*x₂*x₂ + a[5]*x₂*x₃
-                                      + a[6]*x₃*x₃
-            + b[1]*x₁
-            + b[2]*x₂
-            + b[3]*x₃
-            + c
-        )
+        for _ in 1:10
+            p = @SVector rand(3)
+            @test q(center(q) + p) ≈ q(center(q) - p)
+            @test (-q)(p) == -(q(p))
+            @test (q+2q)(p) ≈ 3(q(p))
+            x₁, x₂, x₃ = p
+            @test q(p) ≈
+            (
+                + a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₁*x₃
+                             + a[4]*x₂*x₂ + a[5]*x₂*x₃
+                                          + a[6]*x₃*x₃
+                + b[1]*x₁
+                + b[2]*x₂
+                + b[3]*x₃
+                + c
+            )
+        end
     end
 end
 
@@ -148,4 +190,12 @@ end
     fs = e2.(ps)
     @test_throws Exception interpolation(ps, fs)
     @test fitting(ps, fs) ≈ q2
+
+    ps = [@SVector rand(2) for _ in 1:10000]
+    fs = e2.(ps) + randn(10000)/1000
+    @test_throws Exception interpolation(ps, fs)
+    @test !(fitting(ps, fs) ≈ q2)
+    @test norm((fitting(ps, fs) - q2).a) < 1e-3
+    @test norm((fitting(ps, fs) - q2).b) < 1e-3
+    @test norm((fitting(ps, fs) - q2).c) < 1e-3
 end
