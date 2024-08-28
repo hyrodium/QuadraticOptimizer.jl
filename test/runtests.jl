@@ -19,11 +19,17 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        @test !iszero(q)
+        @test iszero(q-q)
+        @test iszero(Quadratic{D}(zeros(1), zeros(1), 0))
+        @test iszero(Quadratic{D,M}(zeros(1), zeros(1), 0))
 
         for _ in 1:10
-            x₁ = rand()
-            @test q([x₁]) ≈ a[1]*x₁*x₁ + b[1]*x₁ + c
-            @test q(center(q) + [x₁]) ≈ q(center(q) - [x₁])
+            p = @SVector rand(1)
+            @test q(center(q) + p) ≈ q(center(q) - p)
+            @test (-q)(p) == -(q(p))
+            x₁, = p
+            @test q(p) ≈ a[1]*x₁*x₁ + b[1]*x₁ + c
         end
     end
 
@@ -34,12 +40,17 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        @test !iszero(q)
+        @test iszero(q-q)
+        @test iszero(Quadratic{D}(zeros(3), zeros(2), 0))
+        @test iszero(Quadratic{D,M}(zeros(3), zeros(2), 0))
 
         for _ in 1:10
-            x₁ = rand()
-            x₂ = rand()
-            @test q([x₁, x₂]) ≈ a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₂*x₂ + b[1]*x₁ + b[2]*x₂ + c
-            @test q(center(q) + [x₁, x₂]) ≈ q(center(q) - [x₁, x₂])
+            p = @SVector rand(2)
+            @test q(center(q) + p) ≈ q(center(q) - p)
+            @test (-q)(p) == -(q(p))
+            x₁, x₂ = p
+            @test q(p) ≈ a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₂*x₂ + b[1]*x₁ + b[2]*x₂ + c
         end
     end
 
@@ -50,12 +61,17 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        @test !iszero(q)
+        @test iszero(q-q)
+        @test iszero(Quadratic{D}(zeros(6), zeros(3), 0))
+        @test iszero(Quadratic{D,M}(zeros(6), zeros(3), 0))
 
         for _ in 1:10
-            x₁ = rand()
-            x₂ = rand()
-            x₃ = rand()
-            @test q([x₁, x₂, x₃]) ≈
+            p = @SVector rand(3)
+            @test q(center(q) + p) ≈ q(center(q) - p)
+            @test (-q)(p) == -(q(p))
+            x₁, x₂, x₃ = p
+            @test q(p) ≈
             (
                 + a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₁*x₃
                              + a[4]*x₂*x₂ + a[5]*x₂*x₃
@@ -65,7 +81,6 @@ Aqua.test_all(QuadraticOptimizer)
                 + b[3]*x₃
                 + c
             )
-            @test q(center(q) + [x₁, x₂, x₃]) ≈ q(center(q) - [x₁, x₂, x₃])
         end
     end
 end
@@ -157,4 +172,12 @@ end
     fs = e2.(ps)
     @test_throws Exception interpolation(ps, fs)
     @test fitting(ps, fs) ≈ q2
+
+    ps = [@SVector rand(2) for _ in 1:10000]
+    fs = e2.(ps) + randn(10000)/1000
+    @test_throws Exception interpolation(ps, fs)
+    @test fitting(ps, fs) ≉ q2
+    @test norm((fitting(ps, fs) - q2).a) < 1e-3
+    @test norm((fitting(ps, fs) - q2).b) < 1e-3
+    @test norm((fitting(ps, fs) - q2).c) < 1e-3
 end
