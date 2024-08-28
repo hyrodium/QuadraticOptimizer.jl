@@ -9,9 +9,49 @@ function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L
     Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
+function Quadratic{D}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, Ta<:Real, Tb<:Real, Tc <: Real}
+    T = promote_type(Ta, Tb, Tc)
+    L = D*(D+1)÷2
+    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+end
+
+function Quadratic{D,L}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, L, Ta<:Real, Tb<:Real, Tc <: Real}
+    T = promote_type(Ta, Tb, Tc)
+    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+end
+
 function Base.:≈(q1::Quadratic, q2::Quadratic)
     (q1.a ≈ q2.a) & (q1.b ≈ q2.b) & (q1.c ≈ q2.c)
 end
+
+function Base.iszero(q::Quadratic)
+    return iszero(q.a) & iszero(q.b) & iszero(q.c)
+end
+
+function Base.isfinite(q::Quadratic)
+    return isfinite(q.a) & isfinite(q.b) & isfinite(q.c)
+end
+
+function Base.:+(q1::Quadratic, q2::Quadratic)
+    return Quadratic(q1.a+q2.a, q1.b+q2.b, q1.c+q2.c)
+end
+
+function Base.:-(q1::Quadratic, q2::Quadratic)
+    return Quadratic(q1.a-q2.a, q1.b-q2.b, q1.c-q2.c)
+end
+
+function Base.:-(q::Quadratic)
+    return Quadratic(-q.a, -q.b, -q.c)
+end
+
+# TODO
+# function isapprox(q1::Quadratic{L,T1}, q2::Quadratic{L,T2};
+#     atol::Real=0, rtol::Real=rtoldefault(q1,q2,atol),
+#     nans::Bool=false, norm::Function=abs)
+#     q1 == q2 ||
+#     (isfinite(q1) && isfinite(q2) && norm(q1-q2) <= max(atol, rtol*max(norm(q1), norm(q2)))) ||
+#     (nans && isnan(q1) && isnan(q2))
+# end
 
 function center(q::Quadratic{D}) where {D}
     a = q.a
