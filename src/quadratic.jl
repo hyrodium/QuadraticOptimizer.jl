@@ -81,21 +81,8 @@ function (q::Quadratic{D,L,T})(p) where {D,L,T}
     a = q.a
     b = q.b
     c = q.c
-    y = zero(T)
-    j = 1
-    for i1 in 1:D, i2 in i1:D
-        if i1 == i2
-            y += a[j]*p[i1]*p[i2]/2
-        else
-            y += a[j]*p[i1]*p[i2]
-        end
-        j = j + 1
-    end
-    for i in 1:D
-        y += b[i]*p[i]
-    end
-    y += c
-    return y
+    A = SHermitianCompact{D}(a)
+    return p'*A*p/2 + b'*p + c
 end
 
 function _update_XF_at_j!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, j::Integer) where {D}
