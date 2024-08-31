@@ -22,7 +22,7 @@ julia> ps = [@SVector rand(2) for _ in 1:6]
  [0.6611433726193705, 0.6394313620423493]
 
 julia> quadratic_interpolation(ps, q.(ps))
-Quadratic{2, 3, Float64}([1.9999999999999962, 0.9999999999999407, 3.000000000000005], [1.0000000000000533, 2.000000000000017], 1.9999999999999492)
+Quadratic{2, 3, Float64}([1.9999999999995772, 1.0000000000000466, 2.9999999999999947], [1.000000000000042, 1.9999999999999858], 1.9999999999999585)
 ```
 """
 function quadratic_interpolation(ps::AbstractVector{<:StaticVector{D, <:Real}}, fs::AbstractVector{<:Real}) where D

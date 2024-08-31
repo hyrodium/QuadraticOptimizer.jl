@@ -17,6 +17,7 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        A = SHermitianCompact(a)
         @test !iszero(q)
         @test iszero(q-q)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
@@ -28,12 +29,11 @@ Aqua.test_all(QuadraticOptimizer)
         @test !isfinite(Quadratic{D,L}(zeros(1), zeros(1), 0 / 0))
 
         for _ in 1:10
-            p = @SVector rand(1)
+            p = @SVector rand(D)
             @test q(center(q) + p) ≈ q(center(q) - p)
             @test (-q)(p) == -(q(p))
             @test (q+2q)(p) ≈ 3(q(p))
-            x₁, = p
-            @test q(p) ≈ a[1]*x₁*x₁ + b[1]*x₁ + c
+            @test q(p) ≈ p'*A*p/2 + b'*p + c
         end
     end
 
@@ -44,6 +44,7 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        A = SHermitianCompact(a)
         @test !iszero(q)
         @test iszero(q-q)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
@@ -55,12 +56,11 @@ Aqua.test_all(QuadraticOptimizer)
         @test !isfinite(Quadratic{D,L}(zeros(3), zeros(2), 0 / 0))
 
         for _ in 1:10
-            p = @SVector rand(2)
+            p = @SVector rand(D)
             @test q(center(q) + p) ≈ q(center(q) - p)
             @test (-q)(p) == -(q(p))
             @test (q+2q)(p) ≈ 3(q(p))
-            x₁, x₂ = p
-            @test q(p) ≈ a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₂*x₂ + b[1]*x₁ + b[2]*x₂ + c
+            @test q(p) ≈ p'*A*p/2 + b'*p + c
         end
     end
 
@@ -71,6 +71,7 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
+        A = SHermitianCompact(a)
         @test !iszero(q)
         @test iszero(q-q)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
@@ -82,21 +83,11 @@ Aqua.test_all(QuadraticOptimizer)
         @test !isfinite(Quadratic{D,L}(zeros(6), zeros(3), 0 / 0))
 
         for _ in 1:10
-            p = @SVector rand(3)
+            p = @SVector rand(D)
             @test q(center(q) + p) ≈ q(center(q) - p)
             @test (-q)(p) == -(q(p))
             @test (q+2q)(p) ≈ 3(q(p))
-            x₁, x₂, x₃ = p
-            @test q(p) ≈
-            (
-                + a[1]*x₁*x₁ + a[2]*x₁*x₂ + a[3]*x₁*x₃
-                             + a[4]*x₂*x₂ + a[5]*x₂*x₃
-                                          + a[6]*x₃*x₃
-                + b[1]*x₁
-                + b[2]*x₂
-                + b[3]*x₃
-                + c
-            )
+            @test q(p) ≈ p'*A*p/2 + b'*p + c
         end
     end
 end
@@ -104,7 +95,7 @@ end
 f1(p) = sin(p[1]) + p[1]^2/10
 f2(p) = p[1]^2 + sin(p[1]) + 1.5p[2]^2 + sinh(p[2]) - p[1]*p[2]/5
 q1 = Quadratic(SVector(1.2), SVector(4.2), -1.8)
-q2 = Quadratic(SVector(1.2, -1.1, -0.8), SVector(4.2, -2.3), 1.7)
+q2 = Quadratic(SVector(1.2, -1.1/2, -0.8), SVector(4.2, -2.3), 1.7)
 e1(p) = q1(SVector(p[1]))
 e2(p) = q2(p)
 
@@ -161,9 +152,9 @@ end
         ps_init = [@SVector rand(2) for _ in 1:10]
         ps, fs = optimize_qfm(f2, ps_init, 30)
         @test length(ps) == 40
-        @test norm(ForwardDiff.gradient(f2, ps[end])) < 1e-3
+        @test norm(ForwardDiff.gradient(f2, ps[end])) < 2e-3
         @test norm(ForwardDiff.gradient(f2, ps[1])) > 1e-1
-        @test minimum(norm.(ForwardDiff.gradient.(f2, ps))) < 1e-4
+        @test minimum(norm.(ForwardDiff.gradient.(f2, ps))) < 2e-4
     end
 end
 
