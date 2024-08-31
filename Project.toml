@@ -1,7 +1,7 @@
 name = "QuadraticOptimizer"
 uuid = "e7241e48-3d3b-4ed3-9130-818aaeb8a636"
 authors = ["hyrodium <hyrodium@gmail.com> and contributors"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
