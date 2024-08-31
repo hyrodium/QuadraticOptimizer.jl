@@ -74,22 +74,7 @@ end
 # end
 
 function center(q::Quadratic{D}) where {D}
-    a = q.a
-    b = q.b
-
-    A = MMatrix{D,D}(zeros(D,D))
-    j = 1
-    for i1 in 1:D
-        for i2 in i1:D
-            if i1 == i2
-                A[i1,i2] = 2a[j]
-            else
-                A[i1,i2] = A[i2,i1] = a[j]
-            end
-            j = j + 1
-        end
-    end
-    return -A\b
+    return -SHermitianCompact(q.a)\q.b
 end
 
 function (q::Quadratic{D,L,T})(p) where {D,L,T}
@@ -99,7 +84,11 @@ function (q::Quadratic{D,L,T})(p) where {D,L,T}
     y = zero(T)
     j = 1
     for i1 in 1:D, i2 in i1:D
-        y += a[j]*p[i1]*p[i2]
+        if i1 == i2
+            y += a[j]*p[i1]*p[i2]/2
+        else
+            y += a[j]*p[i1]*p[i2]
+        end
         j = j + 1
     end
     for i in 1:D
@@ -115,7 +104,11 @@ function _update_XF_at_j!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVe
     F[j] = fs[end]
     i = 1
     for i1 in 1:D, i2 in i1:D
-        X[i,j] = p[i1]*p[i2]
+        if i1 == i2
+            X[i,j] = p[i1]*p[i2]/2
+        else
+            X[i,j] = p[i1]*p[i2]
+        end
         i = i + 1
     end
     X[L+1:L+D, j] .= p
@@ -130,7 +123,11 @@ function _initialize_XF!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVec
         F[j] = fs[j]
         i = 1
         for i1 in 1:D, i2 in i1:D
-            X[i,j] = p[i1]*p[i2]
+            if i1 == i2
+                X[i,j] = p[i1]*p[i2]/2
+            else
+                X[i,j] = p[i1]*p[i2]
+            end
             i = i + 1
         end
         X[L+1:L+D, j] .= p
