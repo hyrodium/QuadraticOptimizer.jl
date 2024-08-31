@@ -22,7 +22,7 @@ julia> ps = [@SVector rand(2) for _ in 1:6]
  [0.6611433726193705, 0.6394313620423493]
 
 julia> quadratic_fitting(vcat(ps, ps), vcat(q.(ps).-1, q.(ps).+1))
-Quadratic{2, 3, Float64}([2.0000000002328306, 0.9999999999890861, 2.999999999989086], [0.9999999997671694, 2.000000000021828], 2.0000000000436557)
+Quadratic{2, 3, Float64}([1.9999999998835847, 1.000000000003638, 3.0], [0.9999999999417923, 2.0], 1.999999999985448)
 ```
 """
 function quadratic_fitting(ps::AbstractVector{<:StaticVector{D, <:Real}}, fs::AbstractVector{<:Real}) where D
