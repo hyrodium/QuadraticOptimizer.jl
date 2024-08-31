@@ -1,7 +1,5 @@
 using QuadraticOptimizer
 using QuadraticOptimizer: center
-using QuadraticOptimizer: interpolation
-using QuadraticOptimizer: fitting
 using StaticArrays
 using LinearAlgebra
 using Random
@@ -183,19 +181,19 @@ end
 @testset "interpolation, fitting" begin
     ps = [@SVector rand(2) for _ in 1:6]
     fs = e2.(ps)
-    @test interpolation(ps, fs) ≈ q2
-    @test fitting(ps, fs) ≈ q2
+    @test quadratic_interpolation(ps, fs) ≈ q2
+    @test quadratic_fitting(ps, fs) ≈ q2
 
     ps = [@SVector rand(2) for _ in 1:10]
     fs = e2.(ps)
-    @test_throws Exception interpolation(ps, fs)
-    @test fitting(ps, fs) ≈ q2
+    @test_throws Exception quadratic_interpolation(ps, fs)
+    @test quadratic_fitting(ps, fs) ≈ q2
 
     ps = [@SVector rand(2) for _ in 1:10000]
     fs = e2.(ps) + randn(10000)/1000
-    @test_throws Exception interpolation(ps, fs)
-    @test !(fitting(ps, fs) ≈ q2)
-    @test norm((fitting(ps, fs) - q2).a) < 1e-3
-    @test norm((fitting(ps, fs) - q2).b) < 1e-3
-    @test norm((fitting(ps, fs) - q2).c) < 1e-3
+    @test_throws Exception quadratic_interpolation(ps, fs)
+    @test !(quadratic_fitting(ps, fs) ≈ q2)
+    @test norm((quadratic_fitting(ps, fs) - q2).a) < 1e-3
+    @test norm((quadratic_fitting(ps, fs) - q2).b) < 1e-3
+    @test norm((quadratic_fitting(ps, fs) - q2).c) < 1e-3
 end
