@@ -188,3 +188,31 @@ end
     @test norm((quadratic_fitting(ps, fs) - q2).b) < 1e-3
     @test norm((quadratic_fitting(ps, fs) - q2).c) < 1e-3
 end
+
+@testset "more precision types" begin
+    @testset "Rational" begin
+        f(p) = p[1]^3 - p[1]
+        xs_init = big.([0//1, 1//2, 2//3])
+        ps_init = SVector.(xs_init)
+        xs, fxs = optimize_qim(f, xs_init, f.(xs_init), 10)
+        ps, fps = optimize_qim(f, ps_init, f.(ps_init), 10)
+        @test fxs isa Vector{Rational{BigInt}}
+        @test fps isa Vector{Rational{BigInt}}
+        @test fxs == fps
+        @test SVector.(xs) == ps
+        @test 1-3xs[end]^2 < 1e-30
+    end
+
+    @testset "BigFloat" begin
+        f(p) = p[1]^3 - p[1]
+        xs_init = big.([0/1, 1/2, 2/3])
+        ps_init = SVector.(xs_init)
+        xs, fxs = optimize_qim(f, xs_init, f.(xs_init), 10)
+        ps, fps = optimize_qim(f, ps_init, f.(ps_init), 10)
+        @test fxs isa Vector{BigFloat}
+        @test fps isa Vector{BigFloat}
+        @test fxs ≈ fps
+        @test SVector.(xs) ≈ ps
+        @test 1-3xs[end]^2 < 1e-30
+    end
+end
