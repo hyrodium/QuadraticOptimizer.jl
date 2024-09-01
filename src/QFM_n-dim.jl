@@ -25,13 +25,14 @@ julia> quadratic_fitting(vcat(ps, ps), vcat(q.(ps).-1, q.(ps).+1))
 Quadratic{2, 3, Float64}([1.9999999998835847, 1.000000000003638, 3.0], [0.9999999999417923, 2.0], 1.999999999985448)
 ```
 """
-function quadratic_fitting(ps::AbstractVector{<:StaticVector{D, <:Real}}, fs::AbstractVector{<:Real}) where D
+function quadratic_fitting(ps::AbstractVector{<:StaticVector{D, T}}, fs::AbstractVector{T}) where {D, T<:Real}
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
+    U = StaticArrays.arithmetic_closure(T)
     length(fs) == N ≥ M || error("The length of initial values should be larger than $(M).")
-    X = ones(M, N)
-    F = zeros(N)
+    X = ones(U, M, N)
+    F = zeros(U, N)
     _initialize_XF!(X, F, ps, fs)
     _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))
     return _quadratic(X, F, Val(D))
@@ -83,13 +84,14 @@ julia> fs = f.(ps);
 julia> optimize_qfm!(f, ps, fs, 20);
 ```
 """
-function optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer) where D
+function optimize_qfm!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n::Integer) where {D, T<:Real}
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
+    U = StaticArrays.arithmetic_closure(T)
     length(fs) == N ≥ M || error("The length of initial values should be larger than $(M).")
-    X = ones(M, N)
-    F = zeros(N)
+    X = ones(U, M, N)
+    F = zeros(U, N)
     _initialize_XF!(X, F, ps, fs)
     for _ in 1:n
         _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))

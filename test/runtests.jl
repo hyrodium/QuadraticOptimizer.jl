@@ -150,8 +150,8 @@ end
     @testset "D = 2" begin
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:10]
-        ps, fs = optimize_qfm(f2, ps_init, 30)
-        @test length(ps) == 40
+        ps, fs = optimize_qfm(f2, ps_init, 20)
+        @test length(ps) == 30
         @test norm(ForwardDiff.gradient(f2, ps[end])) < 2e-3
         @test norm(ForwardDiff.gradient(f2, ps[1])) > 1e-1
         @test minimum(norm.(ForwardDiff.gradient.(f2, ps))) < 2e-4

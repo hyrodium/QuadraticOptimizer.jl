@@ -25,13 +25,14 @@ julia> quadratic_interpolation(ps, q.(ps))
 Quadratic{2, 3, Float64}([1.9999999999995772, 1.0000000000000466, 2.9999999999999947], [1.000000000000042, 1.9999999999999858], 1.9999999999999585)
 ```
 """
-function quadratic_interpolation(ps::AbstractVector{<:StaticVector{D, <:Real}}, fs::AbstractVector{<:Real}) where D
+function quadratic_interpolation(ps::AbstractVector{<:StaticVector{D, T}}, fs::AbstractVector{T}) where {D, T<:Real}
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
+    U = StaticArrays.arithmetic_closure(T)
     length(fs) == N == M || error("The length of initial values should be equal to $(M).")
-    X = @MMatrix ones(M, M)
-    F = @MVector zeros(M)
+    X = SizedMatrix{M,M}(ones(U, M, M))
+    F = SizedVector{M}(zeros(U, M))
     _initialize_XF!(X, F, ps, fs)
     _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:M))
     return _quadratic(X, F, Val(D))
@@ -79,13 +80,14 @@ julia> fs = f.(ps);
 julia> optimize_qim!(f, ps, fs, 20);
 ```
 """
-function optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer) where D
+function optimize_qim!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n::Integer) where {D, T<:Real}
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
+    U = StaticArrays.arithmetic_closure(T)
     length(fs) == N == M || error("The length of initial values should be equal to $(M).")
-    X = @MMatrix ones(M, M)
-    F = @MVector zeros(M)
+    X = SizedMatrix{M,M}(ones(U, M, M))
+    F = SizedVector{M}(zeros(U, M))
     _initialize_XF!(X, F, ps, fs)
     for _ in 1:n
         _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:M))

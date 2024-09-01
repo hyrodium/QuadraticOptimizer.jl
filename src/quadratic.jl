@@ -124,7 +124,7 @@ end
 
 function _quadratic(X::StaticMatrix{N,N}, F::StaticVector{N}, ::Val{D}) where {N, D}
     L = D*(D+1)÷2
-    Y = pinv(X') * F
+    Y = X' \ F
     a = Y[SOneTo(L)]
     b = SVector{D}(Y[L+1:L+D])
     c = Y[end]
@@ -133,7 +133,7 @@ end
 
 function _quadratic(X::AbstractMatrix, F::AbstractVector, ::Val{D}) where {D}
     L = D*(D+1)÷2
-    Y = pinv(X*X')*(X*F)
+    Y = (X*X')\(X*F)
     a = Y[SOneTo(L)]
     b = SVector{D}(Y[L+1:L+D])
     c = Y[end]
