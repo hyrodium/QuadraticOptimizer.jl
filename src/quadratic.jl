@@ -115,8 +115,8 @@ julia> using QuadraticOptimizer: hessian
 
 julia> using ForwardDiff
 
-julia> q = Quadratic{2}([2.0, 1.0, 3.0], [-1.0, -2.0], 4.5)
-Quadratic{2, 3, Float64}([2.0, 1.0, 3.0], [-1.0, -2.0], 4.5)
+julia> q = Quadratic{2}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+Quadratic{2, 3, Float64}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
 
 julia> hessian(q)
 2×2 StaticArrays.SHermitianCompact{2, Float64, 3} with indices SOneTo(2)×SOneTo(2):
