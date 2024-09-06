@@ -41,7 +41,7 @@ end
 Base.@deprecate fitting quadratic_fitting false
 
 """
-    optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
+    optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n_iter::Integer)
 
 Optimize a function `f` using the Quadratic Fitting Method (QFM).
 
@@ -49,7 +49,7 @@ Optimize a function `f` using the Quadratic Fitting Method (QFM).
 - `f`: The objective function to be optimized.
 - `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
 - `fs`: A vector of function values corresponding to the points in `ps`. This vector will be updated in-place during the optimization process.
-- `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
 !!! note
     In each step of the QFM, the last `m` points from `ps` and `fs` are used to fit a quadratic function.
@@ -84,7 +84,7 @@ julia> fs = f.(ps);
 julia> optimize_qfm!(f, ps, fs, 20);
 ```
 """
-function optimize_qfm!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n::Integer) where {D, T<:Real}
+function optimize_qfm!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n_iter::Integer) where {D, T<:Real}
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
@@ -93,7 +93,7 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n::Integer
     X = ones(U, M, N)
     F = zeros(U, N)
     _initialize_XF!(X, F, ps, fs)
-    for _ in 1:n
+    for _ in 1:n_iter
         _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:N))
         q = _quadratic(X, F, Val(D))
         p = center(q)
@@ -104,7 +104,7 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n::Integer
 end
 
 """
-    optimize_qfm(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
+    optimize_qfm(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n_iter::Integer)
 
 Optimize a function `f` using the Quadratic Fitting Method (QFM).
 
@@ -112,7 +112,7 @@ Optimize a function `f` using the Quadratic Fitting Method (QFM).
 - `f`: The objective function to be optimized.
 - `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
 - `fs`: A vector of function values corresponding to the points in `ps`.
-- `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
 !!! note
     In each step of the QFM, the last `m` points from `ps` and `fs` are used to fit a quadratic function.
@@ -143,21 +143,21 @@ julia> ps_init = [@SVector rand(2) for _ in 1:10]
 julia> ps, fs = optimize_qfm(f, ps_init, f.(ps_init), 20);
 ```
 """
-function optimize_qfm(f, ps_init::Vector{<:SVector{D, <:Real}}, fs_init::Vector{<:Real}, n::Integer) where D
+function optimize_qfm(f, ps_init::Vector{<:SVector{D, <:Real}}, fs_init::Vector{<:Real}, n_iter::Integer) where D
     ps = copy(ps_init)
     fs = copy(fs_init)
-    return optimize_qfm!(f, ps, fs, n)
+    return optimize_qfm!(f, ps, fs, n_iter)
 end
 
 """
-    optimize_qfm(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer)
+    optimize_qfm(f, ps::Vector{<:SVector{D, <:Real}}, n_iter::Integer)
 
 Optimize a function `f` using the Quadratic Fitting Method (QFM).
 
 # Arguments
 - `f`: The objective function to be optimized.
 - `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
-- `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
 !!! note
     In each step of the QFM, the last `m` points from `ps` and `fs` are used to fit a quadratic function.
@@ -188,8 +188,8 @@ julia> ps_init = [@SVector rand(2) for _ in 1:10]
 julia> ps, fs = optimize_qfm(f, ps_init, 20);
 ```
 """
-function optimize_qfm(f, ps_init::Vector{<:SVector{D, <:Real}}, n::Integer) where D
+function optimize_qfm(f, ps_init::Vector{<:SVector{D, <:Real}}, n_iter::Integer) where D
     ps = copy(ps_init)
     fs = f.(ps)
-    return optimize_qfm!(f, ps, fs, n)
+    return optimize_qfm!(f, ps, fs, n_iter)
 end

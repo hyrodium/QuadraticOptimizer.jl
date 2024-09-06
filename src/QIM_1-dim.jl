@@ -10,7 +10,7 @@ function _recursion_qim!(xs::Vector{<:Real}, fs::Vector{<:Real}, F::StaticVector
 end
 
 """
-    optimize_qim!(f, xs::Vector{<:Real}, fs::Vector{<:Real}, n::Integer)
+    optimize_qim!(f, xs::Vector{<:Real}, fs::Vector{<:Real}, n_iter::Integer)
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
@@ -18,7 +18,7 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 - `f`: The objective function to be optimized.
 - `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
 - `fs`: A vector of function values corresponding to the points in `xs`. This vector will be updated in-place during the optimization process.
-- `n`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
 
 !!! note
     In each step of the QIM, the last `3` points from `xs` and `fs` are used to interpolate with a quadratic function.
@@ -44,7 +44,7 @@ julia> fs = f.(xs);
 julia> optimize_qim!(f, xs, fs, 20);
 ```
 """
-function optimize_qim!(f, xs::Vector{T}, fs::Vector{T}, n::Integer) where {T <: Real}
+function optimize_qim!(f, xs::Vector{T}, fs::Vector{T}, n_iter::Integer) where {T <: Real}
     length(xs) ≠ 3 && error("The length of initial values should be 3.")
     U = StaticArrays.arithmetic_closure(T)
     F = SizedVector{3}(zeros(U, 3))
@@ -53,7 +53,7 @@ function optimize_qim!(f, xs::Vector{T}, fs::Vector{T}, n::Integer) where {T <: 
     X[2] = xs[2]
     F[1] = f(xs[1])
     F[2] = f(xs[2])
-    for _ in 1:n
+    for _ in 1:n_iter
         x = _recursion_qim!(xs, fs, F, X)
         push!(xs,x)
         push!(fs,f(x))
@@ -62,7 +62,7 @@ function optimize_qim!(f, xs::Vector{T}, fs::Vector{T}, n::Integer) where {T <: 
 end
 
 """
-    optimize_qim(f, xs::Vector{<:Real}, fs::Vector{<:Real}, n::Integer)
+    optimize_qim(f, xs::Vector{<:Real}, fs::Vector{<:Real}, n_iter::Integer)
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
@@ -70,7 +70,7 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 - `f`: The objective function to be optimized.
 - `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
 - `fs`: A vector of function values corresponding to the points in `xs`.
-- `n`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
 
 !!! note
     In each step of the QIM, the last `3` points from `xs` and `fs` are used to interpolate with a quadratic function.
@@ -92,21 +92,21 @@ julia> xs_init = [1.2, 0.1, -2.2]  # Initial points (3 points are required to co
 julia> xs, fs = optimize_qim(f, xs_init, f.(xs_init), 10);  # Optimize 10 steps
 ```
 """
-function optimize_qim(f, xs_init::Vector{<:Real}, fs_init::Vector{<:Real}, n::Integer)
+function optimize_qim(f, xs_init::Vector{<:Real}, fs_init::Vector{<:Real}, n_iter::Integer)
     xs = copy(xs_init)
     fs = copy(fs_init)
-    return optimize_qim!(f, xs, fs, n)
+    return optimize_qim!(f, xs, fs, n_iter)
 end
 
 """
-    optimize_qim(f, xs::Vector{<:Real}, n::Integer)
+    optimize_qim(f, xs::Vector{<:Real}, n_iter::Integer)
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
 - `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
-- `n`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
 
 !!! note
     In each step of the QIM, the last `3` points from `xs` and `fs` are used to interpolate with a quadratic function.
@@ -134,8 +134,8 @@ julia> xs = copy(xs_init)  # Keep initial points
 julia> xs, fs = optimize_qim(f, xs, 10);  # Optimize 10 steps
 ```
 """
-function optimize_qim(f, xs_init::Vector{<:Real}, n::Integer)
+function optimize_qim(f, xs_init::Vector{<:Real}, n_iter::Integer)
     xs = copy(xs_init)
     fs = f.(xs)
-    return optimize_qim!(f, xs, fs, n)
+    return optimize_qim!(f, xs, fs, n_iter)
 end
