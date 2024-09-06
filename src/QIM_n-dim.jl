@@ -41,19 +41,19 @@ end
 Base.@deprecate interpolation quadratic_interpolation false
 
 """
-    optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
+    optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n_iter::Integer) -> ps, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `ps`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
+- `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
 - `fs`: A vector of function values corresponding to the points in `ps`. This vector will be updated in-place during the optimization process.
-- `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
     In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest
@@ -80,7 +80,7 @@ julia> fs = f.(ps);
 julia> optimize_qim!(f, ps, fs, 20);
 ```
 """
-function optimize_qim!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n::Integer) where {D, T<:Real}
+function optimize_qim!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n_iter::Integer) where {D, T<:Real}
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
@@ -89,7 +89,7 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n::Integer
     X = SizedMatrix{M,M}(ones(U, M, M))
     F = SizedVector{M}(zeros(U, M))
     _initialize_XF!(X, F, ps, fs)
-    for _ in 1:n
+    for _ in 1:n_iter
         _update_XF_at_j!(X, F, ps, fs, mod(length(ps), 1:M))
         q = _quadratic(X, F, Val(D))
         p = center(q)
@@ -100,19 +100,19 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n::Integer
 end
 
 """
-    optimize_qim(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n::Integer)
+    optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, fs_init::Vector{<:Real}, n_iter::Integer) -> ps, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `ps`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated.
-- `fs`: A vector of function values corresponding to the points in `ps`.
-- `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `ps_init`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
+- `fs_init`: A vector of function values corresponding to the points in `ps_init`.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
     In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest
@@ -135,25 +135,25 @@ julia> ps_init = [@SVector rand(2) for _ in 1:6]
 julia> ps, fs = optimize_qim(f, ps_init, f.(ps_init), 20);
 ```
 """
-function optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, fs_init::Vector{<:Real}, n::Integer) where D
+function optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, fs_init::Vector{<:Real}, n_iter::Integer) where D
     ps = copy(ps_init)
     fs = copy(fs_init)
-    return optimize_qim!(f, ps, fs, n)
+    return optimize_qim!(f, ps, fs, n_iter)
 end
 
 """
-    optimize_qfm(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer)
+    optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, n_iter::Integer) -> ps, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `ps`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated.
-- `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `ps_init`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
     In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest
@@ -173,11 +173,11 @@ julia> ps_init = [@SVector rand(2) for _ in 1:6]
  [0.4570310908017041, 0.2993652953937611]
  [0.6611433726193705, 0.6394313620423493]
 
-julia> ps, fs = optimize_qfm(f, ps_init, 10);
+julia> ps, fs = optimize_qim(f, ps_init, 10);
 ```
 """
-function optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, n::Integer) where D
+function optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, n_iter::Integer) where D
     ps = copy(ps_init)
     fs = f.(ps)
-    return optimize_qim!(f, ps, fs, n)
+    return optimize_qim!(f, ps, fs, n_iter)
 end

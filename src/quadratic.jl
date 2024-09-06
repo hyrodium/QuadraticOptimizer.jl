@@ -1,3 +1,30 @@
+"""
+    Quadratic{D, L, T<:Real}
+    Quadratic(a,b,c)
+
+A struct that represents quadratic polynomial.
+
+```math
+\\begin{aligned}
+q(p) &= \\frac{1}{2}p^{\\intercal} A p + b^{\\intercal} p + c \\\\
+A &= \\begin{pmatrix}
+a_1     & a_2      & \\cdots & a_D \\\\
+a_2     & a_{D+1}  & \\cdots & a_{2D-1} \\\\
+\\vdots & \\vdots  & \\ddots & \\vdots \\\\
+a_D     & a_{2D-1} & \\cdots & a_{L}
+\\end{pmatrix}
+\\end{aligned}
+```
+
+# Examples
+```jldoctest
+julia> q = Quadratic{2}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+Quadratic{2, 3, Float64}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+
+julia> q([1,2])
+7.7
+```
+"""
 struct Quadratic{D, L, T<:Real}
     a::SVector{L, T}
     b::SVector{D, T}
@@ -73,15 +100,43 @@ end
 #     (nans && isnan(q1) && isnan(q2))
 # end
 
-function center(q::Quadratic{D}) where {D}
-    return -SHermitianCompact(q.a)\q.b
+function center(q::Quadratic)
+    return -hessian(q)\q.b
+end
+
+"""
+    hessian(q::Quadratic)
+
+Calculate the (constant) hessian of the quadratic polynomial.
+
+# Examples
+```jldoctest
+julia> using QuadraticOptimizer: hessian
+
+julia> using ForwardDiff
+
+julia> q = Quadratic{2}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+Quadratic{2, 3, Float64}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+
+julia> hessian(q)
+2×2 StaticArrays.SHermitianCompact{2, Float64, 3} with indices SOneTo(2)×SOneTo(2):
+ 2.0  1.0
+ 1.0  3.0
+
+julia> ForwardDiff.hessian(q, [1,2])
+2×2 Matrix{Float64}:
+ 2.0  1.0
+ 1.0  3.0
+```
+"""
+function hessian(q::Quadratic)
+    return SHermitianCompact(q.a)
 end
 
 function (q::Quadratic{D,L,T})(p) where {D,L,T}
-    a = q.a
     b = q.b
     c = q.c
-    A = SHermitianCompact{D}(a)
+    A = hessian(q)
     return p'*A*p/2 + b'*p + c
 end
 
@@ -125,19 +180,25 @@ end
 """
     M(D::Integer) = (D+2)*(D+1)÷2
 
-Calculate the number of required points for QIM/QFM that is equal to the number of terms in D-dimensional quadratic polynomial.
-
+Calculate the number of required points for QIM/QFM that is equal to the number of terms in `D`-dimensional quadratic polynomial.
+```math
+\\begin{aligned}
+M(1) &= 3 \\quad (\\text{Number of terms in} \\ \\frac{a_1}{2} x^2 + b_1 x + c) \\\\
+M(2) &= 6 \\quad (\\text{Number of terms in} \\ \\frac{a_1}{2} x^2 + a_2 xy + \\frac{a_3}{2} y^2 + b_1 x + b_2 y + c) \\\\
+M(0) &= 1 \\quad (\\text{Number of terms in} \\ c)
+\\end{aligned}
+```
 # Examples
 ```jldoctest
 julia> using QuadraticOptimizer: M
 
-julia> M(1)  # 3 points to construct a parabola, terms: (x^2/2, x, 1)
+julia> M(1)  # 3 points to interpolate a parabola
 3
 
-julia> M(2)  # 6 points to construct a 2-dimensional quadratic, terms: (x^2/2, xy, y^2, x, y, z, 1)
+julia> M(2)  # 6 points to interpolate a 2-dimensional quadratic
 6
 
-julia> M(0)  # 1 point for constant, terms: (1,)
+julia> M(0)  # 1 point for constant, terms
 1
 ```
 """

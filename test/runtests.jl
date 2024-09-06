@@ -1,5 +1,6 @@
 using QuadraticOptimizer
 using QuadraticOptimizer: center
+using QuadraticOptimizer: hessian
 using StaticArrays
 using LinearAlgebra
 using Random
@@ -17,7 +18,7 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
-        A = SHermitianCompact(a)
+        A = hessian(q)
         @test !iszero(q)
         @test iszero(q-q)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
@@ -44,7 +45,7 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
-        A = SHermitianCompact(a)
+        A = hessian(q)
         @test !iszero(q)
         @test iszero(q-q)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
@@ -71,7 +72,7 @@ Aqua.test_all(QuadraticOptimizer)
         b = SVector{D}(rand(D))
         c = rand()
         q = Quadratic(a,b,c)
-        A = SHermitianCompact(a)
+        A = hessian(q)
         @test !iszero(q)
         @test iszero(q-q)
         @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2

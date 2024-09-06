@@ -1,8 +1,10 @@
 using Documenter
 using QuadraticOptimizer
+using QuadraticOptimizer: M
 using Plots
 using Random
 using StaticArrays
+using ForwardDiff
 
 # Setup for doctests in docstrings
 DocMeta.setdocmeta!(QuadraticOptimizer, :DocTestSetup, :(using QuadraticOptimizer))
@@ -18,6 +20,7 @@ makedocs(;
     ),
     pages = [
         "Home" => "index.md",
+        "Developer Notes" => "dev-notes.md",
         "API" => "api.md",
     ],
     repo = "https://github.com/hyrodium/QuadraticOptimizer.jl/blob/{commit}{path}#L{line}",
