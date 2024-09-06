@@ -52,7 +52,7 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 - `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
 !!! note
-    In each step of the QIM, the last `m` (`==(D*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
+    In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
     The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
 
 # Examples
@@ -111,7 +111,7 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 - `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
 !!! note
-    In each step of the QIM, the last `m` (`==(D*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
+    In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
     The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
 
 # Examples
@@ -152,7 +152,7 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 - `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
 !!! note
-    In each step of the QIM, the last `m` (`==(D*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
+    In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
     The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
 
 # Examples

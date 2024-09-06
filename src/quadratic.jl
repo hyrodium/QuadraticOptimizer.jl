@@ -122,7 +122,10 @@ function _initialize_XF!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVec
     return X, F
 end
 
+M(D::Integer) = (D+2)*(D+1)÷2
+
 function _quadratic(X::StaticMatrix{N,N}, F::StaticVector{N}, ::Val{D}) where {N, D}
+    N ≠ M(D) && throw(ArgumentError("The input value N=$(N) must be equal to M=(D+2)(D+1)/2=$(M(D))."))
     L = D*(D+1)÷2
     Y = X' \ F
     a = Y[SOneTo(L)]
