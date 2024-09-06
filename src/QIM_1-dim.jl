@@ -16,7 +16,7 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `xs`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
+- `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
 - `fs`: A vector of function values corresponding to the points in `xs`. This vector will be updated in-place during the optimization process.
 - `n`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
 
@@ -68,7 +68,7 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `xs`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated.
+- `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
 - `fs`: A vector of function values corresponding to the points in `xs`.
 - `n`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
 
@@ -105,7 +105,7 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `xs`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated.
+- `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
 - `n`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
 
 !!! note

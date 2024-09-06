@@ -125,19 +125,25 @@ end
 """
     M(D::Integer) = (D+2)*(D+1)÷2
 
-Calculate the number of required points for QIM/QFM that is equal to the number of terms in D-dimensional quadratic polynomial.
-
+Calculate the number of required points for QIM/QFM that is equal to the number of terms in `D`-dimensional quadratic polynomial.
+```math
+\\begin{aligned}
+M(1) &= 3 \\quad (\\text{Number of terms in} \\ \\frac{a_1}{2} x^2 + b_1 x + c) \\\\
+M(2) &= 6 \\quad (\\text{Number of terms in} \\ \\frac{a_1}{2} x^2 + a_2 xy + \\frac{a_3}{2} y^2 + b_1 x + b_2 y + c) \\\\
+M(0) &= 1 \\quad (\\text{Number of terms in} \\ c)
+\\end{aligned}
+```
 # Examples
 ```jldoctest
 julia> using QuadraticOptimizer: M
 
-julia> M(1)  # 3 points to construct a parabola, terms: (x^2/2, x, 1)
+julia> M(1)  # 3 points to interpolate a parabola
 3
 
-julia> M(2)  # 6 points to construct a 2-dimensional quadratic, terms: (x^2/2, xy, y^2, x, y, z, 1)
+julia> M(2)  # 6 points to interpolate a 2-dimensional quadratic
 6
 
-julia> M(0)  # 1 point for constant, terms: (1,)
+julia> M(0)  # 1 point for constant, terms
 1
 ```
 """

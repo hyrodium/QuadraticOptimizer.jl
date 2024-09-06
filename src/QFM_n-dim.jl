@@ -47,7 +47,7 @@ Optimize a function `f` using the Quadratic Fitting Method (QFM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `ps`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
+- `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
 - `fs`: A vector of function values corresponding to the points in `ps`. This vector will be updated in-place during the optimization process.
 - `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
@@ -110,7 +110,7 @@ Optimize a function `f` using the Quadratic Fitting Method (QFM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `ps`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated.
+- `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
 - `fs`: A vector of function values corresponding to the points in `ps`.
 - `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
@@ -156,7 +156,7 @@ Optimize a function `f` using the Quadratic Fitting Method (QFM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `ps`: A vector of points in ``\\mathbb{R}^d`` where `f` has been evaluated.
+- `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
 - `n`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
 
 !!! note
