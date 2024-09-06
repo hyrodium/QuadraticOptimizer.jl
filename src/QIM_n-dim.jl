@@ -41,7 +41,7 @@ end
 Base.@deprecate interpolation quadratic_interpolation false
 
 """
-    optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n_iter::Integer)
+    optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n_iter::Integer) -> ps, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
@@ -49,11 +49,11 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 - `f`: The objective function to be optimized.
 - `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
 - `fs`: A vector of function values corresponding to the points in `ps`. This vector will be updated in-place during the optimization process.
-- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
     In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest
@@ -100,19 +100,19 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n_iter::In
 end
 
 """
-    optimize_qim(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n_iter::Integer)
+    optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, fs_init::Vector{<:Real}, n_iter::Integer) -> ps, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
-- `fs`: A vector of function values corresponding to the points in `ps`.
-- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `ps_init`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
+- `fs_init`: A vector of function values corresponding to the points in `ps_init`.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
     In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest
@@ -142,18 +142,18 @@ function optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, fs_init::Vector{
 end
 
 """
-    optimize_qim(f, ps::Vector{<:SVector{D, <:Real}}, n_iter::Integer)
+    optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, n_iter::Integer) -> ps, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `ps`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
-- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `m + n`, where `m = length(ps)` before execution.
+- `ps_init`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
     In each step of the QIM, the last `M` (`==((D+2)*(D+1)/2)`) points from `ps` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `ps` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest

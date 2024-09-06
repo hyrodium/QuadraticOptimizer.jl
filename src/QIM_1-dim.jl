@@ -10,7 +10,7 @@ function _recursion_qim!(xs::Vector{<:Real}, fs::Vector{<:Real}, F::StaticVector
 end
 
 """
-    optimize_qim!(f, xs::Vector{<:Real}, fs::Vector{<:Real}, n_iter::Integer)
+    optimize_qim!(f, xs::Vector{<:Real}, fs::Vector{<:Real}, n_iter::Integer) -> xs, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
@@ -18,11 +18,11 @@ Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 - `f`: The objective function to be optimized.
 - `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated. This vector will be updated in-place during the optimization process.
 - `fs`: A vector of function values corresponding to the points in `xs`. This vector will be updated in-place during the optimization process.
-- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `N + n_iter`, where `N = length(xs)` before execution.
 
 !!! note
     In each step of the QIM, the last `3` points from `xs` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `xs` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `xs` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest
@@ -62,19 +62,19 @@ function optimize_qim!(f, xs::Vector{T}, fs::Vector{T}, n_iter::Integer) where {
 end
 
 """
-    optimize_qim(f, xs::Vector{<:Real}, fs::Vector{<:Real}, n_iter::Integer)
+    optimize_qim(f, xs_init::Vector{<:Real}, fs_init::Vector{<:Real}, n_iter::Integer) -> xs, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
-- `fs`: A vector of function values corresponding to the points in `xs`.
-- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
+- `xs_init`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
+- `fs_init`: A vector of function values corresponding to the points in `xs_init`.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `N + n_iter`, where `N = length(xs)` before execution.
 
 !!! note
     In each step of the QIM, the last `3` points from `xs` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `xs` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `xs` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest
@@ -99,18 +99,18 @@ function optimize_qim(f, xs_init::Vector{<:Real}, fs_init::Vector{<:Real}, n_ite
 end
 
 """
-    optimize_qim(f, xs::Vector{<:Real}, n_iter::Integer)
+    optimize_qim(f, xs_init::Vector{<:Real}, n_iter::Integer) -> xs, fs
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
 # Arguments
 - `f`: The objective function to be optimized.
-- `xs`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
-- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `m + n`, where `m = length(xs)` before execution.
+- `xs_init`: A vector of points in ``\\mathbb{R}^D`` where `f` has been evaluated.
+- `n_iter`: The number of optimizing iterations. After execution, the length of `xs` will be `N + n_iter`, where `N = length(xs)` before execution.
 
 !!! note
     In each step of the QIM, the last `3` points from `xs` and `fs` are used to interpolate with a quadratic function.
-    The method iteratively refines the points and function values, extending `xs` and `fs` with `n` additional points resulting from the optimization process.
+    The method iteratively refines the points and function values, extending `xs` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
 ```jldoctest
