@@ -4,6 +4,7 @@ using QuadraticOptimizer: M
 using Plots
 using Random
 using StaticArrays
+using ForwardDiff
 
 # Setup for doctests in docstrings
 DocMeta.setdocmeta!(QuadraticOptimizer, :DocTestSetup, :(using QuadraticOptimizer))
