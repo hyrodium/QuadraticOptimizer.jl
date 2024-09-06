@@ -19,7 +19,7 @@ makedocs(;
     ),
     pages = [
         "Home" => "index.md",
-        "Developer Notes" => "dev.md",
+        "Developer Notes" => "dev-notes.md",
         "API" => "api.md",
     ],
     repo = "https://github.com/hyrodium/QuadraticOptimizer.jl/blob/{commit}{path}#L{line}",
