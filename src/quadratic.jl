@@ -122,6 +122,25 @@ function _initialize_XF!(X::AbstractMatrix, F::AbstractVector, ps::Vector{<:SVec
     return X, F
 end
 
+"""
+    M(D::Integer) = (D+2)*(D+1)÷2
+
+Calculate the number of required points for QIM/QFM that is equal to the number of terms in D-dimensional quadratic polynomial.
+
+# Examples
+```jldoctest
+julia> using QuadraticOptimizer: M
+
+julia> M(1)  # 3 points to construct a parabola, terms: (x^2/2, x, 1)
+3
+
+julia> M(2)  # 6 points to construct a 2-dimensional quadratic, terms: (x^2/2, xy, y^2, x, y, z, 1)
+6
+
+julia> M(0)  # 1 point for constant, terms: (1,)
+1
+```
+"""
 M(D::Integer) = (D+2)*(D+1)÷2
 
 function _quadratic(X::StaticMatrix{N,N}, F::StaticVector{N}, ::Val{D}) where {N, D}
