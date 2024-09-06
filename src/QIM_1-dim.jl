@@ -99,7 +99,7 @@ function optimize_qim(f, xs_init::Vector{<:Real}, fs_init::Vector{<:Real}, n::In
 end
 
 """
-    optimize_qfm(f, xs::Vector{<:Real}, n::Integer)
+    optimize_qim(f, xs::Vector{<:Real}, n::Integer)
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 

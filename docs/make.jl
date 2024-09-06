@@ -1,5 +1,6 @@
 using Documenter
 using QuadraticOptimizer
+using QuadraticOptimizer: M
 using Plots
 using Random
 using StaticArrays

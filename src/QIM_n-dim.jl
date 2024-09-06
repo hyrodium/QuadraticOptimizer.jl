@@ -142,7 +142,7 @@ function optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, fs_init::Vector{
 end
 
 """
-    optimize_qfm(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer)
+    optimize_qim(f, ps::Vector{<:SVector{D, <:Real}}, n::Integer)
 
 Optimize a function `f` using the Quadratic Interpolation Method (QIM).
 
@@ -173,7 +173,7 @@ julia> ps_init = [@SVector rand(2) for _ in 1:6]
  [0.4570310908017041, 0.2993652953937611]
  [0.6611433726193705, 0.6394313620423493]
 
-julia> ps, fs = optimize_qfm(f, ps_init, 10);
+julia> ps, fs = optimize_qim(f, ps_init, 10);
 ```
 """
 function optimize_qim(f, ps_init::Vector{<:SVector{D, <:Real}}, n::Integer) where D
