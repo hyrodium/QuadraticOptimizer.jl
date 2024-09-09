@@ -29,22 +29,29 @@ struct Quadratic{D, L, T<:Real}
     a::SVector{L, T}
     b::SVector{D, T}
     c::T
+    function Quadratic{D,L,T}(a::SVector{L, T}, b::SVector{D, T}, c::T) where {D, L, T<:Real}
+        return new{D,L,T}(a, b, c)
+    end
 end
 
-function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L, D, Ta<:Real, Tb<:Real, Tc <: Real}
+function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L, D, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
-    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+    return Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
-function Quadratic{D}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, Ta<:Real, Tb<:Real, Tc <: Real}
+function Quadratic{D}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
     L = D*(D+1)÷2
-    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+    return Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
-function Quadratic{D,L}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, L, Ta<:Real, Tb<:Real, Tc <: Real}
+function Quadratic{D,L}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, L, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
-    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+    return Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+end
+
+function Quadratic{D,L,T}(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}, c::Real) where {D, L, T}
+    return Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
 function Base.:≈(q1::Quadratic, q2::Quadratic)
