@@ -30,6 +30,7 @@ struct Quadratic{D, T<:Real, L}
     b::SVector{D, T}
     c::T
     function Quadratic{D,T,L}(a::SVector{L, T}, b::SVector{D, T}, c::T) where {D, T<:Real, L}
+        L ≠ D*(D+1)÷2 && throw(ArgumentError("The sizes of input vectors are invalid"))
         return new{D,T,L}(a, b, c)
     end
 end
@@ -118,6 +119,7 @@ Base.:*(k::Real, q::Quadratic) = Quadratic(k*q.a, k*q.b, k*q.c)
 Base.:*(q::Quadratic, k::Real) = k*q
 Base.:\(k::Real, q::Quadratic) = Quadratic(k\q.a, k\q.b, k\q.c)
 Base.:/(q::Quadratic, k::Real) = Quadratic(q.a/k, q.b/k, q.c/k)
+Base.zero(::Type{Quadratic{D,T,L}}) where {D,T,L} = Quadratic{D,T,L}(zero(T))
 Base.zero(::Type{Quadratic{D,T}}) where {D,T} = Quadratic{D,T}(zero(T))
 Base.zero(::Type{Quadratic{D}}) where D = Quadratic{D,Float64}(zero(Float64))
 Base.zero(q::Quadratic) = zero(typeof(q))
