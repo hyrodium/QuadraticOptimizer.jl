@@ -79,6 +79,14 @@ end
 function Quadratic{D,T,L}(c::T) where {D, T<:Real, L}
     return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), c)
 end
+function Quadratic{D,T}(c::T) where {D, T<:Real}
+    L = D*(D+1)÷2
+    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), c)
+end
+function Quadratic{D}(c::T) where {D, T<:Real}
+    L = D*(D+1)÷2
+    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), c)
+end
 
 function Base.convert(::Type{Quadratic{D,T,L}}, c::Real) where {D, T<:Real, L}
     return Quadratic{D,T,L}(c)
@@ -108,6 +116,9 @@ Base.:*(k::Real, q::Quadratic) = Quadratic(k*q.a, k*q.b, k*q.c)
 Base.:*(q::Quadratic, k::Real) = k*q
 Base.:\(k::Real, q::Quadratic) = Quadratic(k\q.a, k\q.b, k\q.c)
 Base.:/(q::Quadratic, k::Real) = Quadratic(q.a/k, q.b/k, q.c/k)
+Base.zero(::Type{Quadratic{D,T}}) where {D,T} = Quadratic{D,T}(zero(T))
+Base.zero(::Type{Quadratic{D}}) where D = Quadratic{D,Float64}(zero(Float64))
+Base.zero(q::Quadratic) = zero(typeof(q))
 
 # TODO
 # function isapprox(q1::Quadratic{L,T1}, q2::Quadratic{L,T2};
