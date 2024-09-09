@@ -34,24 +34,58 @@ struct Quadratic{D, T<:Real, L}
     end
 end
 
+# (a,b,c) constructor
 function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L, D, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
     return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
-
 function Quadratic{D}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
     L = D*(D+1)÷2
     return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
-
 function Quadratic{D,T}(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}, c::Real) where {D, T<:Real}
     L = D*(D+1)÷2
     return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
-
 function Quadratic{D,T,L}(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}, c::Real) where {D, T, L}
     return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+end
+
+# (A,b,c) constructor
+function (::Type{Q})(A::AbstractMatrix{Ta}, b::AbstractVector{Tb}, c::Tc) where {Q<:Quadratic{D}, Ta<:Real, Tb<:Real, Tc<:Real} where D
+    issymmetric(A) || throw(ArgumentError("Input matrix must be symmetric."))
+    a = SVector(SHermitianCompact{D}(A).lowertriangle)
+    return Q(a, b, c)
+end
+function Quadratic(A::StaticMatrix{D,D,Ta}, b::StaticVector{D,Tb}, c::Tc) where {Ta<:Real, Tb<:Real, Tc<:Real} where D
+    issymmetric(A) || throw(ArgumentError("Input matrix must be symmetric."))
+    a = SVector(SHermitianCompact{D}(A).lowertriangle)
+    return Quadratic(a, b, c)
+end
+# Not sure the following methods causes ambiguities..
+# function Quadratic(A::StaticMatrix{D,D,Ta}, b::AbstractVector{Tb}, c::Tc) where {Ta<:Real, Tb<:Real, Tc<:Real} where D
+#     issymmetric(A) || throw(ArgumentError("Input matrix must be symmetric."))
+#     a = SVector(SHermitianCompact{D}(A).lowertriangle)
+#     return Quadratic(a, b, c)
+# end
+# function Quadratic(A::AbstractMatrix{Ta}, b::StaticVector{D,Tb}, c::Tc) where {Ta<:Real, Tb<:Real, Tc<:Real} where D
+#     issymmetric(A) || throw(ArgumentError("Input matrix must be symmetric."))
+#     a = SVector(SHermitianCompact{D}(A).lowertriangle)
+#     return Quadratic(a, b, c)
+# end
+
+# (c) contructor
+function Quadratic{D,T,L}(c::T) where {D, T<:Real, L}
+    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), c)
+end
+
+function Base.convert(::Type{Quadratic{D,T,L}}, c::Real) where {D, T<:Real, L}
+    return Quadratic{D,T,L}(c)
+end
+
+function Base.promote_rule(::Type{Quadratic{D,T,L}}, ::Type{S}) where {D,T,L,S}
+    return Quadratic{D,promote_type(T,S),L}
 end
 
 function Base.:≈(q1::Quadratic, q2::Quadratic)
