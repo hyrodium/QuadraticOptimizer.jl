@@ -100,37 +100,14 @@ function Base.isfinite(q::Quadratic)
     return all(isfinite.(q.a)) & all(isfinite.(q.b)) & isfinite(q.c)
 end
 
-function Base.:+(q1::Quadratic, q2::Quadratic)
-    return Quadratic(q1.a+q2.a, q1.b+q2.b, q1.c+q2.c)
-end
-
-function Base.:-(q1::Quadratic, q2::Quadratic)
-    return Quadratic(q1.a-q2.a, q1.b-q2.b, q1.c-q2.c)
-end
-
-function Base.:+(q::Quadratic)
-    return q
-end
-
-function Base.:-(q::Quadratic)
-    return Quadratic(-q.a, -q.b, -q.c)
-end
-
-function Base.:*(k::Real, q::Quadratic)
-    return Quadratic(k*q.a, k*q.b, k*q.c)
-end
-
-function Base.:*(q::Quadratic, k::Real)
-    return k*q
-end
-
-function Base.:\(k::Real, q::Quadratic)
-    return Quadratic(k\q.a, k\q.b, k\q.c)
-end
-
-function Base.:/(q::Quadratic, k::Real)
-    return Quadratic(q.a/k, q.b/k, q.c/k)
-end
+Base.:+(q::Quadratic) = q
+Base.:-(q::Quadratic) = Quadratic(-q.a, -q.b, -q.c)
+Base.:+(q1::Quadratic, q2::Quadratic) = Quadratic(q1.a+q2.a, q1.b+q2.b, q1.c+q2.c)
+Base.:-(q1::Quadratic, q2::Quadratic) = Quadratic(q1.a-q2.a, q1.b-q2.b, q1.c-q2.c)
+Base.:*(k::Real, q::Quadratic) = Quadratic(k*q.a, k*q.b, k*q.c)
+Base.:*(q::Quadratic, k::Real) = k*q
+Base.:\(k::Real, q::Quadratic) = Quadratic(k\q.a, k\q.b, k\q.c)
+Base.:/(q::Quadratic, k::Real) = Quadratic(q.a/k, q.b/k, q.c/k)
 
 # TODO
 # function isapprox(q1::Quadratic{L,T1}, q2::Quadratic{L,T2};
