@@ -120,7 +120,7 @@ Base.zero(::Type{Quadratic{D,T}}) where {D,T} = Quadratic{D,T}(zero(T))
 Base.zero(::Type{Quadratic{D}}) where D = Quadratic{D,Float64}(zero(Float64))
 Base.zero(q::Quadratic) = zero(typeof(q))
 
-_norm(q::Quadratic) = sqrt(tr(hessian(q)*hessian(q))+q(center(q))^2)
+norm_quadratic(q::Quadratic) = sqrt(tr(hessian(q)*hessian(q))+q(center(q))^2)
 
 function Base.rtoldefault(::Union{Q1,Type{Q1}}, ::Union{Q2,Type{Q2}}, atol::Real) where {Q1<:Quadratic{D,L,T1},Q2<:Quadratic{D,L,T2}} where {D,L,T1,T2}
     rtol = max(Base.rtoldefault(T1), Base.rtoldefault(T2))
@@ -129,7 +129,7 @@ end
 
 function Base.isapprox(q1::Quadratic{D}, q2::Quadratic{D};
     atol::Real=0, rtol::Real=Base.rtoldefault(q1,q2,atol),
-    nans::Bool=false, norm::Function=_norm) where D
+    nans::Bool=false, norm::Function=norm_quadratic) where D
     q1 == q2 ||
     (isfinite(q1) && isfinite(q2) && norm(q1-q2) <= max(atol, rtol*max(norm(q1), norm(q2)))) ||
     (nans && isnan(q1) && isnan(q2))
