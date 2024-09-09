@@ -1,8 +1,8 @@
 """
-    Quadratic{D, L, T<:Real}
+    Quadratic{D, T<:Real, L}
     Quadratic(a,b,c)
 
-A struct that represents quadratic polynomial.
+A struct that represents quadratic polynomial on ``\\mathbb{R}^D``.
 
 ```math
 \\begin{aligned}
@@ -25,26 +25,78 @@ julia> q([1,2])
 7.7
 ```
 """
-struct Quadratic{D, L, T<:Real}
+struct Quadratic{D, T<:Real, L}
     a::SVector{L, T}
     b::SVector{D, T}
     c::T
+    function Quadratic{D,T,L}(a::SVector{L, T}, b::SVector{D, T}, c::T) where {D, T<:Real, L}
+        L ≠ D*(D+1)÷2 && throw(ArgumentError("The sizes of input vectors are invalid"))
+        return new{D,T,L}(a, b, c)
+    end
 end
 
-function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L, D, Ta<:Real, Tb<:Real, Tc <: Real}
+# (a,b,c) constructor
+function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L, D, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
-    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+    return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
-
-function Quadratic{D}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, Ta<:Real, Tb<:Real, Tc <: Real}
+function Quadratic{D}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
     L = D*(D+1)÷2
-    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+    return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+end
+function Quadratic{D,T}(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}, c::Real) where {D, T<:Real}
+    L = D*(D+1)÷2
+    return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+end
+function Quadratic{D,T,L}(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}, c::Real) where {D, T, L}
+    return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
-function Quadratic{D,L}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, L, Ta<:Real, Tb<:Real, Tc <: Real}
-    T = promote_type(Ta, Tb, Tc)
-    Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+# (A,b,c) constructor
+function (::Type{Q})(A::AbstractMatrix{Ta}, b::AbstractVector{Tb}, c::Tc) where {Q<:Quadratic{D}, Ta<:Real, Tb<:Real, Tc<:Real} where D
+    issymmetric(A) || throw(ArgumentError("Input matrix must be symmetric."))
+    a = SVector(SHermitianCompact{D}(A).lowertriangle)
+    return Q(a, b, c)
+end
+function Quadratic(A::StaticMatrix{D,D,Ta}, b::StaticVector{D,Tb}, c::Tc) where {Ta<:Real, Tb<:Real, Tc<:Real} where D
+    issymmetric(A) || throw(ArgumentError("Input matrix must be symmetric."))
+    a = SVector(SHermitianCompact{D}(A).lowertriangle)
+    return Quadratic(a, b, c)
+end
+# Not sure the following methods causes ambiguities..
+# function Quadratic(A::StaticMatrix{D,D,Ta}, b::AbstractVector{Tb}, c::Tc) where {Ta<:Real, Tb<:Real, Tc<:Real} where D
+#     issymmetric(A) || throw(ArgumentError("Input matrix must be symmetric."))
+#     a = SVector(SHermitianCompact{D}(A).lowertriangle)
+#     return Quadratic(a, b, c)
+# end
+# function Quadratic(A::AbstractMatrix{Ta}, b::StaticVector{D,Tb}, c::Tc) where {Ta<:Real, Tb<:Real, Tc<:Real} where D
+#     issymmetric(A) || throw(ArgumentError("Input matrix must be symmetric."))
+#     a = SVector(SHermitianCompact{D}(A).lowertriangle)
+#     return Quadratic(a, b, c)
+# end
+
+# (c) contructor
+function Quadratic{D,T,L}(c) where {D, T<:Real, L}
+    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), T(c))
+end
+function Quadratic{D,T}(c) where {D, T<:Real}
+    L = D*(D+1)÷2
+    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), T(c))
+end
+function Quadratic{D}(c::T) where {D, T<:Real}
+    L = D*(D+1)÷2
+    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), c)
+end
+
+Base.:(==)(q1::Quadratic, q2::Quadratic) = (q1.a == q2.a) & (q1.b == q2.b) & (q1.c == q2.c)
+
+function Base.convert(::Type{Quadratic{D,T,L}}, c::Real) where {D, T<:Real, L}
+    return Quadratic{D,T,L}(c)
+end
+
+function Base.promote_rule(::Type{Quadratic{D,T,L}}, ::Type{S}) where {D,T,L,S}
+    return Quadratic{D,promote_type(T,S),L}
 end
 
 function Base.:≈(q1::Quadratic, q2::Quadratic)
@@ -59,37 +111,18 @@ function Base.isfinite(q::Quadratic)
     return all(isfinite.(q.a)) & all(isfinite.(q.b)) & isfinite(q.c)
 end
 
-function Base.:+(q1::Quadratic, q2::Quadratic)
-    return Quadratic(q1.a+q2.a, q1.b+q2.b, q1.c+q2.c)
-end
-
-function Base.:-(q1::Quadratic, q2::Quadratic)
-    return Quadratic(q1.a-q2.a, q1.b-q2.b, q1.c-q2.c)
-end
-
-function Base.:+(q::Quadratic)
-    return q
-end
-
-function Base.:-(q::Quadratic)
-    return Quadratic(-q.a, -q.b, -q.c)
-end
-
-function Base.:*(k::Real, q::Quadratic)
-    return Quadratic(k*q.a, k*q.b, k*q.c)
-end
-
-function Base.:*(q::Quadratic, k::Real)
-    return k*q
-end
-
-function Base.:\(k::Real, q::Quadratic)
-    return Quadratic(k\q.a, k\q.b, k\q.c)
-end
-
-function Base.:/(q::Quadratic, k::Real)
-    return Quadratic(q.a/k, q.b/k, q.c/k)
-end
+Base.:+(q::Quadratic) = q
+Base.:-(q::Quadratic) = Quadratic(-q.a, -q.b, -q.c)
+Base.:+(q1::Quadratic, q2::Quadratic) = Quadratic(q1.a+q2.a, q1.b+q2.b, q1.c+q2.c)
+Base.:-(q1::Quadratic, q2::Quadratic) = Quadratic(q1.a-q2.a, q1.b-q2.b, q1.c-q2.c)
+Base.:*(k::Real, q::Quadratic) = Quadratic(k*q.a, k*q.b, k*q.c)
+Base.:*(q::Quadratic, k::Real) = k*q
+Base.:\(k::Real, q::Quadratic) = Quadratic(k\q.a, k\q.b, k\q.c)
+Base.:/(q::Quadratic, k::Real) = Quadratic(q.a/k, q.b/k, q.c/k)
+Base.zero(::Type{Quadratic{D,T,L}}) where {D,T,L} = Quadratic{D,T,L}(zero(T))
+Base.zero(::Type{Quadratic{D,T}}) where {D,T} = Quadratic{D,T}(zero(T))
+Base.zero(::Type{Quadratic{D}}) where D = Quadratic{D,Float64}(zero(Float64))
+Base.zero(q::Quadratic) = zero(typeof(q))
 
 # TODO
 # function isapprox(q1::Quadratic{L,T1}, q2::Quadratic{L,T2};
@@ -133,7 +166,7 @@ function hessian(q::Quadratic)
     return SHermitianCompact(q.a)
 end
 
-function (q::Quadratic{D,L,T})(p) where {D,L,T}
+function (q::Quadratic)(p)
     b = q.b
     c = q.c
     A = hessian(q)
