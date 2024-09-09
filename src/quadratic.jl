@@ -1,8 +1,8 @@
 """
-    Quadratic{D, L, T<:Real}
+    Quadratic{D, T<:Real, L}
     Quadratic(a,b,c)
 
-A struct that represents quadratic polynomial.
+A struct that represents quadratic polynomial on ``\\mathbb{R}^D``.
 
 ```math
 \\begin{aligned}
@@ -25,33 +25,33 @@ julia> q([1,2])
 7.7
 ```
 """
-struct Quadratic{D, L, T<:Real}
+struct Quadratic{D, T<:Real, L}
     a::SVector{L, T}
     b::SVector{D, T}
     c::T
-    function Quadratic{D,L,T}(a::SVector{L, T}, b::SVector{D, T}, c::T) where {D, L, T<:Real}
-        return new{D,L,T}(a, b, c)
+    function Quadratic{D,T,L}(a::SVector{L, T}, b::SVector{D, T}, c::T) where {D, T<:Real, L}
+        return new{D,T,L}(a, b, c)
     end
 end
 
 function Quadratic(a::StaticVector{L,Ta}, b::StaticVector{D,Tb}, c::Tc) where {L, D, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
-    return Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+    return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
 function Quadratic{D}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, Ta<:Real, Tb<:Real, Tc<:Real}
     T = promote_type(Ta, Tb, Tc)
     L = D*(D+1)÷2
-    return Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+    return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
-function Quadratic{D,L}(a::AbstractVector{Ta}, b::AbstractVector{Tb}, c::Tc) where {D, L, Ta<:Real, Tb<:Real, Tc<:Real}
-    T = promote_type(Ta, Tb, Tc)
-    return Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+function Quadratic{D,T}(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}, c::Real) where {D, T<:Real}
+    L = D*(D+1)÷2
+    return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
-function Quadratic{D,L,T}(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}, c::Real) where {D, L, T}
-    return Quadratic{D,L,T}(SVector{L,T}(a), SVector{D,T}(b), T(c))
+function Quadratic{D,T,L}(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}, c::Real) where {D, T, L}
+    return Quadratic{D,T,L}(SVector{L,T}(a), SVector{D,T}(b), T(c))
 end
 
 function Base.:≈(q1::Quadratic, q2::Quadratic)
@@ -140,7 +140,7 @@ function hessian(q::Quadratic)
     return SHermitianCompact(q.a)
 end
 
-function (q::Quadratic{D,L,T})(p) where {D,L,T}
+function (q::Quadratic)(p)
     b = q.b
     c = q.c
     A = hessian(q)
