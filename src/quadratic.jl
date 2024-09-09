@@ -76,17 +76,19 @@ end
 # end
 
 # (c) contructor
-function Quadratic{D,T,L}(c::T) where {D, T<:Real, L}
-    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), c)
+function Quadratic{D,T,L}(c) where {D, T<:Real, L}
+    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), T(c))
 end
-function Quadratic{D,T}(c::T) where {D, T<:Real}
+function Quadratic{D,T}(c) where {D, T<:Real}
     L = D*(D+1)÷2
-    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), c)
+    return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), T(c))
 end
 function Quadratic{D}(c::T) where {D, T<:Real}
     L = D*(D+1)÷2
     return Quadratic{D,T,L}(zero(SVector{L,T}), zero(SVector{D,T}), c)
 end
+
+Base.:(==)(q1::Quadratic, q2::Quadratic) = (q1.a == q2.a) & (q1.b == q2.b) & (q1.c == q2.c)
 
 function Base.convert(::Type{Quadratic{D,T,L}}, c::Real) where {D, T<:Real, L}
     return Quadratic{D,T,L}(c)
