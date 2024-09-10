@@ -29,7 +29,7 @@ function quadratic_interpolation(ps::AbstractVector{<:StaticVector{D, T}}, fs::A
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
-    U = StaticArrays.arithmetic_closure(T)
+    U = arithmetic_closure(T)
     length(fs) == N == M || error("The length of initial values should be equal to $(M).")
     X = SizedMatrix{M,M}(ones(U, M, M))
     F = SizedVector{M}(zeros(U, M))
@@ -84,7 +84,7 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n_iter::In
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
-    U = StaticArrays.arithmetic_closure(T)
+    U = arithmetic_closure(T)
     length(fs) == N == M || error("The length of initial values should be equal to $(M).")
     X = SizedMatrix{M,M}(ones(U, M, M))
     F = SizedVector{M}(zeros(U, M))

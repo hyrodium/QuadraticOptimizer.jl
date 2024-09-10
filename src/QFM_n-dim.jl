@@ -29,7 +29,7 @@ function quadratic_fitting(ps::AbstractVector{<:StaticVector{D, T}}, fs::Abstrac
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
-    U = StaticArrays.arithmetic_closure(T)
+    U = arithmetic_closure(T)
     length(fs) == N ≥ M || error("The length of initial values should be larger than $(M).")
     X = ones(U, M, N)
     F = zeros(U, N)
@@ -88,7 +88,7 @@ function optimize_qfm!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n_iter::In
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
-    U = StaticArrays.arithmetic_closure(T)
+    U = arithmetic_closure(T)
     length(fs) == N ≥ M || error("The length of initial values should be larger than $(M).")
     X = ones(U, M, N)
     F = zeros(U, N)

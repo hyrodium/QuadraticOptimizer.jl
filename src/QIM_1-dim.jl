@@ -46,7 +46,7 @@ julia> optimize_qim!(f, xs, fs, 20);
 """
 function optimize_qim!(f, xs::Vector{T}, fs::Vector{T}, n_iter::Integer) where {T <: Real}
     length(xs) ≠ 3 && error("The length of initial values should be 3.")
-    U = StaticArrays.arithmetic_closure(T)
+    U = arithmetic_closure(T)
     F = SizedVector{3}(zeros(U, 3))
     X = SizedVector{3}(zeros(U, 3))
     X[1] = xs[1]
