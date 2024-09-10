@@ -122,7 +122,7 @@ Base.zero(q::Quadratic) = zero(typeof(q))
 
 norm_quadratic(q::Quadratic) = sqrt(tr(hessian(q)*hessian(q))+q(center(q))^2)
 
-function Base.rtoldefault(::Union{Q1,Type{Q1}}, ::Union{Q2,Type{Q2}}, atol::Real) where {Q1<:Quadratic{D,L,T1},Q2<:Quadratic{D,L,T2}} where {D,L,T1,T2}
+function Base.rtoldefault(::Union{Q1,Type{Q1}}, ::Union{Q2,Type{Q2}}, atol::Real) where {Q1<:Quadratic{D,T1,L},Q2<:Quadratic{D,T2,L}} where {D,L,T1,T2}
     rtol = max(Base.rtoldefault(T1), Base.rtoldefault(T2))
     return atol > 0 ? zero(rtol) : rtol
 end
