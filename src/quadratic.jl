@@ -19,7 +19,7 @@ a_D     & a_{2D-1} & \\cdots & a_{L}
 # Examples
 ```jldoctest
 julia> q = Quadratic{2}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
-Quadratic{2, 3, Float64}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+Quadratic{2, Float64, 3}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
 
 julia> q([1,2])
 7.7
@@ -151,7 +151,7 @@ julia> using QuadraticOptimizer: hessian
 julia> using ForwardDiff
 
 julia> q = Quadratic{2}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
-Quadratic{2, 3, Float64}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+Quadratic{2, Float64, 3}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
 
 julia> hessian(q)
 2×2 StaticArrays.SHermitianCompact{2, Float64, 3} with indices SOneTo(2)×SOneTo(2):

@@ -10,7 +10,7 @@ julia> using QuadraticOptimizer, StaticArrays, Random
 julia> Random.seed!(42);
 
 julia> q = Quadratic{2}([2,1,3], [1,2], 2)
-Quadratic{2, 3, Int64}([2, 1, 3], [1, 2], 2)
+Quadratic{2, Int64, 3}([2, 1, 3], [1, 2], 2)
 
 julia> ps = [@SVector rand(2) for _ in 1:6]
 6-element Vector{SVector{2, Float64}}:
@@ -22,7 +22,7 @@ julia> ps = [@SVector rand(2) for _ in 1:6]
  [0.6611433726193705, 0.6394313620423493]
 
 julia> quadratic_fitting(vcat(ps, ps), vcat(q.(ps).-1, q.(ps).+1))
-Quadratic{2, 3, Float64}([2.000000000387182, 0.9999999999890256, 2.999999999972893], [0.9999999997884512, 2.0000000000207985], 2.000000000052808)
+Quadratic{2, Float64, 3}([2.000000000387182, 0.9999999999890256, 2.999999999972893], [0.9999999997884512, 2.0000000000207985], 2.000000000052808)
 ```
 """
 function quadratic_fitting(ps::AbstractVector{<:StaticVector{D, T}}, fs::AbstractVector{T}) where {D, T<:Real}
