@@ -1,6 +1,6 @@
 module QuadraticOptimizer
 
-using LinearAlgebra: issymmetric, tr
+using LinearAlgebra: issymmetric, tr, I
 using StaticArrays: SVector, SHermitianCompact, SizedVector, SizedMatrix, StaticVector, StaticMatrix, SOneTo, arithmetic_closure
 
 export Quadratic
