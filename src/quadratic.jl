@@ -121,12 +121,12 @@ Base.zero(::Type{Quadratic{D}}) where D = Quadratic{D,Float64}(zero(Float64))
 Base.zero(q::Quadratic) = zero(typeof(q))
 
 @doc raw"""
-    dist(q1, q2; S=I, h=1)
+    distance(q1::Quadratic, q2::Quadratic; S=I, h=1)
 
 Calculate the distance between two `Quadratic` instances based on the following expression.
 ```math
 \begin{aligned}
-\operatorname{dist}(q_1, q_2) &= \sqrt{\operatorname{tr}(\Delta A \Delta A) + (\Delta s)^{\intercal}S(\Delta s) + h\Delta h^2} \\
+\operatorname{distance}(q_1, q_2) &= \sqrt{\operatorname{tr}(\Delta A \Delta A) + (\Delta s)^{\intercal}S(\Delta s) + h\Delta h^2} \\
 \Delta A &= A_1 - A_2 \\
 \Delta s &= s_1 - s_2 \\
 \Delta h &= h_1 - h_2 \\
@@ -135,12 +135,21 @@ q_2(p) &= (p-s_2)^{\intercal}A_2(p-s_2) + h_2
 \end{aligned}
 ```
 Note that the inputs `q1` and `q2` must be convex downward to make the function mathematical distance.
+
+# Examples
+```jldoctest
+julia> q = Quadratic{2}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+Quadratic{2, Float64, 3}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+
+julia> q([1,2])
+7.7
+```
 """
-function dist(q1::Quadratic, q2::Quadratic; S=I, h::Real=1)
+function distance(q1::Quadratic, q2::Quadratic; S=I, h::Real=1)
     A1 = hessian(q1)
     A2 = hessian(q2)
-    s1 = center(q1)
-    s2 = center(q2)
+    s1 = pcenter(q1)
+    s2 = pcenter(q2)
     h1 = q1(s1)
     h2 = q2(s2)
     ΔA = A1-A2
@@ -158,11 +167,12 @@ function Base.isapprox(q1::Quadratic{D}, q2::Quadratic{D};
     atol::Real=0, rtol::Real=Base.rtoldefault(q1,q2,atol),
     nans::Bool=false) where D
     q1 == q2 ||
-    (isfinite(q1) && isfinite(q2) && dist(q1,q2) <= max(atol, rtol*max(dist(zero(q1),q1), dist(zero(q2),q2)))) ||
+    (isfinite(q1) && isfinite(q2) && distance(q1,q2) <= max(atol, rtol*max(distance(zero(q1),q1), distance(zero(q2),q2)))) ||
     (nans && isnan(q1) && isnan(q2))
 end
 
 center(q::Quadratic) = -hessian(q)\q.b
+pcenter(q::Quadratic) = -pinv(hessian(q))*q.b
 
 """
     hessian(q::Quadratic)
