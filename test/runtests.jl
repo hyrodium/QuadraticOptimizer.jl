@@ -1,6 +1,8 @@
 using QuadraticOptimizer
+using QuadraticOptimizer: M
 using QuadraticOptimizer: center
 using QuadraticOptimizer: hessian
+using QuadraticOptimizer: distance
 using StaticArrays
 using LinearAlgebra
 using Random
