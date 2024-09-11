@@ -7,7 +7,7 @@ using StaticArrays
 using ForwardDiff
 
 # Setup for doctests in docstrings
-DocMeta.setdocmeta!(QuadraticOptimizer, :DocTestSetup, :(using QuadraticOptimizer))
+DocMeta.setdocmeta!(QuadraticOptimizer, :DocTestSetup, :(using QuadraticOptimizer, LinearAlgebra))
 
 makedocs(;
     modules = [QuadraticOptimizer],

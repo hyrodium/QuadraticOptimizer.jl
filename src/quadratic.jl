@@ -138,14 +138,31 @@ Note that the inputs `q1` and `q2` must be convex downward to make the function 
 
 # Examples
 ```jldoctest
-julia> q = Quadratic{2}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
-Quadratic{2, Float64, 3}([2.0, 1.0, 3.0], [-1.2, -2.3], 4.5)
+julia> using QuadraticOptimizer: center, distance
 
-julia> q([1,2])
-7.7
+julia> q1 = Quadratic{2}(I(2), [-1.0, 0.0], 4.5)
+Quadratic{2, Float64, 3}([1.0, 0.0, 1.0], [-1.0, 0.0], 4.5)
+
+julia> q2 = Quadratic{2}(I(2), [1.0, 0.0], 4.5)
+Quadratic{2, Float64, 3}([1.0, 0.0, 1.0], [1.0, 0.0], 4.5)
+
+julia> q3 = Quadratic{2}(2I(2), [-2.0, 0.0], 4.5)
+Quadratic{2, Float64, 3}([2.0, 0.0, 2.0], [-2.0, 0.0], 4.5)
+
+julia> q4 = Quadratic{2}(2I(2), [2.0, 0.0], 4.5)
+Quadratic{2, Float64, 3}([2.0, 0.0, 2.0], [2.0, 0.0], 4.5)
+
+julia> distance(q1, q1), distance(q2, q2), distance(q3, q3), distance(q4, q4)  # a distance to itself is zero
+(0.0, 0.0, 0.0, 0.0)
+
+julia> distance(q1, q2), distance(q2, q1)  # symmetric
+(2.0, 2.0)
+
+julia> distance(q1, q3), distance(q2, q4)  # translation does not change distance
+(1.5, 1.5)
 ```
 """
-function distance(q1::Quadratic, q2::Quadratic; S=I, h::Real=1)
+function distance(q1::Quadratic{D}, q2::Quadratic{D}; S=I, h::Real=1) where D
     A1 = hessian(q1)
     A2 = hessian(q2)
     s1 = pcenter(q1)
