@@ -100,15 +100,13 @@ end
     ps = [@SVector rand(2) for _ in 1:10]
     fs = e2.(ps)
     @test_throws Exception quadratic_interpolation(ps, fs)
-    @test quadratic_fitting(ps, fs) ≈ q2
+    @test quadratic_fitting(ps, fs) ≈ q2 rtol=1e-5
 
     ps = [@SVector rand(2) for _ in 1:10000]
     fs = e2.(ps) + randn(10000)/1000
     @test_throws Exception quadratic_interpolation(ps, fs)
     @test !(quadratic_fitting(ps, fs) ≈ q2)
-    @test norm((quadratic_fitting(ps, fs) - q2).a) < 1e-3
-    @test norm((quadratic_fitting(ps, fs) - q2).b) < 1e-3
-    @test norm((quadratic_fitting(ps, fs) - q2).c) < 1e-3
+    @test quadratic_fitting(ps, fs) ≈ q2 rtol=1e-3
 end
 
 @testset "more precision types" begin
