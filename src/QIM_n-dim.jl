@@ -10,7 +10,7 @@ julia> using QuadraticOptimizer, StaticArrays, Random
 julia> Random.seed!(42);
 
 julia> q = Quadratic{2}([2,1,3], [1,2], 2)
-Quadratic{2, 3, Int64}([2, 1, 3], [1, 2], 2)
+Quadratic{2, Int64, 3}([2, 1, 3], [1, 2], 2)
 
 julia> ps = [@SVector rand(2) for _ in 1:6]
 6-element Vector{SVector{2, Float64}}:
@@ -22,14 +22,14 @@ julia> ps = [@SVector rand(2) for _ in 1:6]
  [0.6611433726193705, 0.6394313620423493]
 
 julia> quadratic_interpolation(ps, q.(ps))
-Quadratic{2, 3, Float64}([1.9999999999997884, 0.999999999999996, 2.999999999999987], [1.0000000000001212, 2.0000000000000053], 1.999999999999966)
+Quadratic{2, Float64, 3}([1.9999999999997884, 0.999999999999996, 2.999999999999987], [1.0000000000001212, 2.0000000000000053], 1.999999999999966)
 ```
 """
 function quadratic_interpolation(ps::AbstractVector{<:StaticVector{D, T}}, fs::AbstractVector{T}) where {D, T<:Real}
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
-    U = StaticArrays.arithmetic_closure(T)
+    U = arithmetic_closure(T)
     length(fs) == N == M || error("The length of initial values should be equal to $(M).")
     X = SizedMatrix{M,M}(ones(U, M, M))
     F = SizedVector{M}(zeros(U, M))
@@ -84,7 +84,7 @@ function optimize_qim!(f, ps::Vector{<:SVector{D, T}}, fs::Vector{T}, n_iter::In
     L = D*(D+1)÷2
     M = D+L+1
     N = length(ps)
-    U = StaticArrays.arithmetic_closure(T)
+    U = arithmetic_closure(T)
     length(fs) == N == M || error("The length of initial values should be equal to $(M).")
     X = SizedMatrix{M,M}(ones(U, M, M))
     F = SizedVector{M}(zeros(U, M))

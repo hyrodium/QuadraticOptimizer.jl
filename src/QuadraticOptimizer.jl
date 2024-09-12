@@ -1,7 +1,7 @@
 module QuadraticOptimizer
 
-using LinearAlgebra
-using StaticArrays
+using LinearAlgebra: issymmetric, tr, I, pinv
+using StaticArrays: SVector, SHermitianCompact, SizedVector, SizedMatrix, StaticVector, StaticMatrix, SOneTo, arithmetic_closure
 
 export Quadratic
 export quadratic_interpolation

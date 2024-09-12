@@ -130,6 +130,82 @@
         end
     end
 
+    @testset "distance" begin
+        @testset "randomized" begin
+            for _ in 1:10000, D in 1:5
+                # Generate random quadratic
+                q1 = Quadratic{D}(randn(M(D)-D-1),randn(D),randn())
+                q2 = Quadratic{D}(randn(M(D)-D-1),randn(D),randn())
+                q3 = Quadratic{D}(randn(M(D)-D-1),randn(D),randn())
+
+                # The distance from a point to itself is zero
+                @test distance(q1,q1) == 0
+                @test distance(q2,q2) == 0
+                @test distance(q3,q3) == 0
+
+                # Positivity
+                @test 0 < distance(q1,q3)
+                @test 0 < distance(q3,q2)
+                @test 0 < distance(q2,q1)
+
+                # Symmetry
+                @test distance(q1,q3) == distance(q3,q1)
+                @test distance(q3,q2) == distance(q2,q3)
+                @test distance(q2,q1) == distance(q1,q2)
+
+                # Triangle inequality
+                @test distance(q1,q3) < distance(q1,q2) + distance(q2,q3)
+                @test distance(q3,q2) < distance(q3,q1) + distance(q1,q2)
+                @test distance(q2,q1) < distance(q2,q3) + distance(q3,q1)
+            end
+        end
+
+        @testset "Δq" begin
+            N_repeat = 100000
+            D = 2
+
+            q = Quadratic{D}(I(D),zeros(D),0)
+            for _ in 1:N_repeat
+                r = normalize!(randn(M(D)))/100
+                Δq = Quadratic{D}(r[D+1:end-1],r[1:D],r[end])
+                @test distance(q, q+Δq) ≈ distance(q, q-Δq) rtol=0.01
+                @test 0.005 ≤ distance(q, q+Δq) ≤ 0.015
+            end
+            for _ in 1:N_repeat
+                r = normalize!(randn(M(D)))/1000
+                Δq = Quadratic{D}(r[D+1:end-1],r[1:D],r[end])
+                @test distance(q, q+Δq) ≈ distance(q, q-Δq) rtol=0.001
+                @test 0.0005 ≤ distance(q, q+Δq) ≤ 0.0015
+            end
+            for _ in 1:N_repeat
+                r = normalize!(randn(M(D)))/10000
+                Δq = Quadratic{D}(r[D+1:end-1],r[1:D],r[end])
+                @test distance(q, q+Δq) ≈ distance(q, q-Δq) rtol=0.0001
+                @test 0.00005 ≤ distance(q, q+Δq) ≤ 0.00015
+            end
+
+            q = Quadratic{D}(I(D),ones(D),0)
+            for _ in 1:N_repeat
+                r = normalize!(randn(M(D)))/100
+                Δq = Quadratic{D}(r[D+1:end-1],r[1:D],r[end])
+                @test distance(q, q+Δq) ≈ distance(q, q-Δq) rtol=0.1
+                @test 0.002 ≤ distance(q, q+Δq) ≤ 0.03
+            end
+            for _ in 1:N_repeat
+                r = normalize!(randn(M(D)))/1000
+                Δq = Quadratic{D}(r[D+1:end-1],r[1:D],r[end])
+                @test distance(q, q+Δq) ≈ distance(q, q-Δq) rtol=0.01
+                @test 0.0002 ≤ distance(q, q+Δq) ≤ 0.003
+            end
+            for _ in 1:N_repeat
+                r = normalize!(randn(M(D)))/10000
+                Δq = Quadratic{D}(r[D+1:end-1],r[1:D],r[end])
+                @test distance(q, q+Δq) ≈ distance(q, q-Δq) rtol=0.001
+                @test 0.00002 ≤ distance(q, q+Δq) ≤ 0.0003
+            end
+        end
+    end
+
     @testset "D = $D" for D in 1:3
         L = D*(D+1)÷2
         a = SVector{L}(rand(L))
