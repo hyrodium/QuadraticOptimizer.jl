@@ -38,8 +38,6 @@ function quadratic_interpolation(ps::AbstractVector{<:StaticVector{D, T}}, fs::A
     return _quadratic(X, F, Val(D))
 end
 
-Base.@deprecate interpolation quadratic_interpolation false
-
 """
     optimize_qim!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n_iter::Integer) -> ps, fs
 

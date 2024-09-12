@@ -38,8 +38,6 @@ function quadratic_fitting(ps::AbstractVector{<:StaticVector{D, T}}, fs::Abstrac
     return _quadratic(X, F, Val(D))
 end
 
-Base.@deprecate fitting quadratic_fitting false
-
 """
     optimize_qfm!(f, ps::Vector{<:SVector{D, <:Real}}, fs::Vector{<:Real}, n_iter::Integer) -> ps, fs
 
