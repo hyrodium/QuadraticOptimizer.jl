@@ -33,9 +33,9 @@
         @test Quadratic(SVector(1, 2, 3), SVector(4, 5), 6) isa Quadratic{2,Int,3}
         @test Quadratic(SVector(1, 2, 3, 4, 5, 6), SVector(1, 2, 3), 4) isa Quadratic{3,Int,6}
         ## Method Error cases
-        @test_throws MethodError Quadratic([1], [2], 3) isa Quadratic{1,Int,1}
-        @test_throws MethodError Quadratic([1, 2, 3], [4, 5], 6) isa Quadratic{2,Int,3}
-        @test_throws MethodError Quadratic([1, 2, 3, 4, 5, 6], [1, 2, 3], 4) isa Quadratic{3,Int,6}
+        @test_throws MethodError Quadratic([1], [2], 3)
+        @test_throws MethodError Quadratic([1, 2, 3], [4, 5], 6)
+        @test_throws MethodError Quadratic([1, 2, 3, 4, 5, 6], [1, 2, 3], 4)
         ## Input type promotion
         @test Quadratic(SVector(1,2,3), SVector(1//1, 1//2), 4f0) isa Quadratic{2,Float32}
 
@@ -107,7 +107,7 @@
         @test zero(Quadratic{2,Int})(fill(42//1,2)) === 0//1
         @test zero(Quadratic{3,Int})(fill(42//1,3)) === 0//1
 
-        @testset "randomized (D = $D)" for D in 1:3
+        @testset "randomized test with (D = $D)" for D in 1:3
             for _ in 1:10
                 L = D*(D+1)÷2
                 a = SVector{L}(randn(L))
@@ -127,6 +127,16 @@
             @test !isfinite(Quadratic{D,T,L}(zeros(L) ./ zeros(L), zeros(D), 0))
             @test !isfinite(Quadratic{D,T,L}(zeros(L), zeros(D) ./ zeros(D), 0))
             @test !isfinite(Quadratic{D,T,L}(zeros(L), zeros(D), 0 / 0))
+        end
+    end
+
+    @testset "nan" begin
+        for D in 1:3, T in (Float32, Float64)
+            L = D*(D+1)÷2
+            @test !isnan(Quadratic{D,T,L}(zeros(L), zeros(D), 0))
+            @test isnan(Quadratic{D,T,L}(zeros(L) ./ zeros(L), zeros(D), 0))
+            @test isnan(Quadratic{D,T,L}(zeros(L), zeros(D) ./ zeros(D), 0))
+            @test isnan(Quadratic{D,T,L}(zeros(L), zeros(D), 0 / 0))
         end
     end
 
@@ -206,22 +216,53 @@
         end
     end
 
-    @testset "D = $D" for D in 1:3
-        L = D*(D+1)÷2
-        a = SVector{L}(rand(L))
-        b = SVector{D}(rand(D))
-        c = rand()
-        q = Quadratic(a,b,c)
-        A = hessian(q)
-        T = Float64
-        @test -(2q+(+q)) ≈ 3(-q) == (-q)*3 == -3q == -2\q*6 == -6q/2
+    @testset "arithmetic" begin
+        @test Quadratic{1}(4) !== Quadratic{2}(4)
+        @test Quadratic{1}(4) != Quadratic{2}(4)
+        @test Quadratic{1}(4) !== Quadratic{1}(4.0)
+        @test Quadratic{1}(4) == Quadratic{1}(4.0)
 
-        for _ in 1:10
-            p = @SVector rand(D)
-            @test q(center(q) + p) ≈ q(center(q) - p)
-            @test (-q)(p) == -(q(p))
-            @test (q+2q)(p) ≈ 3(q(p))
-            @test q(p) ≈ p'*A*p/2 + b'*p + c
+        @test +Quadratic{2}(4) === Quadratic{2}(4)
+        @test -Quadratic{1}(4) === Quadratic{1}(-4)
+        @test 3 + Quadratic{4}(4) === Quadratic{4}(7)
+        @test 3 - Quadratic{3}(4) === Quadratic{3}(-1)
+        @test Quadratic{4}(4) + 3 === Quadratic{4}(7)
+        @test Quadratic{3}(4) - 3 === Quadratic{3}(1)
+        @test_throws DimensionMismatch Quadratic{2}(3) + Quadratic{4}(3)
+
+        @testset "randomized test with (D = $D)" for D in 1:4
+            for _ in 1:10
+                L = D*(D+1)÷2
+                a1 = SVector{L}(rand(L))
+                a2 = SVector{L}(rand(L))
+                b1 = SVector{D}(rand(D))
+                b2 = SVector{D}(rand(D))
+                c1 = rand()
+                c2 = rand()
+                q1 = Quadratic(a1,b1,c1)
+                q2 = Quadratic(a2,b2,c2)
+                @test q1 + q2 === q2 + q1 === Quadratic(a1+a2,b1+b2,c1+c2)
+                @test q1 - q2 === -q2 + q1 === Quadratic(a1-a2,b1-b2,c1-c2)
+                @test q1 + 1 === Quadratic(a1,b1,c1+1)
+                @test q1 + Quadratic{D}(1) === Quadratic(a1,b1,c1+1)
+                @test q1 + zero(q1) === q1
+                @test zero(q1) + q1 === q1
+                @test 2q1 === q1+q1
+                @test -q1 + q1 === q1 - q1 === zero(q1)
+
+                A1 = hessian(q1)
+                A2 = hessian(q2)
+                for _ in 1:10
+                    p = @SVector rand(D)
+                    @test q1(center(q1) + p) ≈ q1(center(q1) - p)
+                    @test q2(center(q2) + p) ≈ q2(center(q2) - p)
+                    @test (-q1)(p) == -(q1(p))
+                    @test (-q2)(p) == -(q2(p))
+                    @test (q1+2q1+q2/2)(p) ≈ 3(q1(p)) + q2(p)/2
+                    @test q1(p) ≈ p'*A1*p/2 + b1'*p + c1
+                    @test q2(p) ≈ p'*A2*p/2 + b2'*p + c2
+                end
+            end
         end
     end
 end

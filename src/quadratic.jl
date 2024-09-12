@@ -91,9 +91,12 @@ end
 
 Base.:(==)(q1::Quadratic, q2::Quadratic) = (q1.a == q2.a) & (q1.b == q2.b) & (q1.c == q2.c)
 
-function Base.convert(::Type{Quadratic{D,T,L}}, c::Real) where {D, T<:Real, L}
-    return Quadratic{D,T,L}(c)
-end
+# We don't define `Base.convert` method for now.
+# e.g. `[Quadratic{2}(1), 2]` should not automatically converted to `[Quadratic{2}(1), Quadratic{2}(2)]`.
+# Furthermore, `Quadratic{2}(1) == 1` is not satisfied by design.
+# function Base.convert(::Type{Quadratic{D,T,L}}, c::Real) where {D, T<:Real, L}
+#     return Quadratic{D,T,L}(c)
+# end
 
 function Base.promote_rule(::Type{Quadratic{D,T,L}}, ::Type{S}) where {D,T,L,S}
     return Quadratic{D,promote_type(T,S),L}
@@ -107,10 +110,18 @@ function Base.isfinite(q::Quadratic)
     return all(isfinite.(q.a)) & all(isfinite.(q.b)) & isfinite(q.c)
 end
 
+function Base.isnan(q::Quadratic)
+    return any(isnan.(q.a)) | any(isnan.(q.b)) | isnan(q.c)
+end
+
 Base.:+(q::Quadratic) = q
 Base.:-(q::Quadratic) = Quadratic(-q.a, -q.b, -q.c)
 Base.:+(q1::Quadratic, q2::Quadratic) = Quadratic(q1.a+q2.a, q1.b+q2.b, q1.c+q2.c)
 Base.:-(q1::Quadratic, q2::Quadratic) = Quadratic(q1.a-q2.a, q1.b-q2.b, q1.c-q2.c)
+Base.:+(q::Quadratic, a::Real) = Quadratic(q.a, q.b, q.c + a)
+Base.:-(q::Quadratic, a::Real) = Quadratic(q.a, q.b, q.c - a)
+Base.:+(a::Real, q::Quadratic) = Quadratic(q.a, q.b, q.c + a)
+Base.:-(a::Real, q::Quadratic) = Quadratic(-q.a, -q.b, a - q.c)
 Base.:*(k::Real, q::Quadratic) = Quadratic(k*q.a, k*q.b, k*q.c)
 Base.:*(q::Quadratic, k::Real) = k*q
 Base.:\(k::Real, q::Quadratic) = Quadratic(k\q.a, k\q.b, k\q.c)
