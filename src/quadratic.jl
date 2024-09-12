@@ -110,6 +110,10 @@ function Base.isfinite(q::Quadratic)
     return all(isfinite.(q.a)) & all(isfinite.(q.b)) & isfinite(q.c)
 end
 
+function Base.isnan(q::Quadratic)
+    return any(isnan.(q.a)) | any(isnan.(q.b)) | isnan(q.c)
+end
+
 Base.:+(q::Quadratic) = q
 Base.:-(q::Quadratic) = Quadratic(-q.a, -q.b, -q.c)
 Base.:+(q1::Quadratic, q2::Quadratic) = Quadratic(q1.a+q2.a, q1.b+q2.b, q1.c+q2.c)

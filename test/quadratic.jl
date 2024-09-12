@@ -130,6 +130,16 @@
         end
     end
 
+    @testset "nan" begin
+        for D in 1:3, T in (Float32, Float64)
+            L = D*(D+1)÷2
+            @test !isnan(Quadratic{D,T,L}(zeros(L), zeros(D), 0))
+            @test isnan(Quadratic{D,T,L}(zeros(L) ./ zeros(L), zeros(D), 0))
+            @test isnan(Quadratic{D,T,L}(zeros(L), zeros(D) ./ zeros(D), 0))
+            @test isnan(Quadratic{D,T,L}(zeros(L), zeros(D), 0 / 0))
+        end
+    end
+
     @testset "distance" begin
         @testset "randomized" begin
             for _ in 1:10000, D in 1:5
