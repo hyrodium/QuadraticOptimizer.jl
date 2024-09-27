@@ -41,7 +41,7 @@ julia> xs = copy(xs_init);
 
 julia> fs = f.(xs);
 
-julia> optimize_qim!(f, xs, fs, 20);
+julia> optimize_qim!(f, xs, fs, 10);  # Optimize 10 steps
 ```
 """
 function optimize_qim!(f, xs::Vector{T}, fs::Vector{T}, n_iter::Integer) where {T <: Real}
