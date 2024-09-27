@@ -69,6 +69,18 @@ end
 end
 
 @testset "QFM" begin
+    @testset "D = 1" begin
+        xs_init = [1.2, 0.1, -2.2, -1.0]
+        ps_init = SVector{1}.(xs_init)
+        xs, _ = optimize_qfm(f1, xs_init, 6)
+        ps, _ = optimize_qfm(f1, ps_init, 6)
+        @test all([p[1] for p in ps] .≈ xs)
+        @test abs(ForwardDiff.derivative(f1, xs[end])) < 1e-4
+        @test norm(ForwardDiff.gradient(f1, ps[end])) < 1e-4
+        @test minimum(norm.(ForwardDiff.derivative.(f1, xs))) < 1e-4
+        @test minimum(norm.(ForwardDiff.gradient.(f1, ps))) < 1e-4
+    end
+
     @testset "D = 2" begin
         Random.seed!(42)
         ps_init = [@SVector rand(2) for _ in 1:10]
