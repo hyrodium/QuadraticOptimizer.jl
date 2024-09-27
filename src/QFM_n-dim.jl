@@ -50,7 +50,7 @@ Optimize a function `f` using the Quadratic Fitting Method (QFM).
 - `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
-    In each step of the QFM, the last `m` points from `ps` and `fs` are used to fit a quadratic function.
+    In each step of the QFM, the last `N` points from `ps` and `fs` are used to fit a quadratic function.
     The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
@@ -113,7 +113,7 @@ Optimize a function `f` using the Quadratic Fitting Method (QFM).
 - `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
-    In each step of the QFM, the last `m` points from `ps` and `fs` are used to fit a quadratic function.
+    In each step of the QFM, the last `N` points from `ps` and `fs` are used to fit a quadratic function.
     The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
@@ -158,7 +158,7 @@ Optimize a function `f` using the Quadratic Fitting Method (QFM).
 - `n_iter`: The number of optimizing iterations. After execution, the length of `ps` will be `N + n_iter`, where `N = length(ps)` before execution.
 
 !!! note
-    In each step of the QFM, the last `m` points from `ps` and `fs` are used to fit a quadratic function.
+    In each step of the QFM, the last `N` points from `ps` and `fs` are used to fit a quadratic function.
     The method iteratively refines the points and function values, extending `ps` and `fs` with `n_iter` additional points resulting from the optimization process.
 
 # Examples
