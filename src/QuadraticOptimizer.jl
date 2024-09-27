@@ -13,6 +13,7 @@ export optimize_qfm!
 
 include("quadratic.jl")
 include("QIM_1-dim.jl")
+include("QFM_1-dim.jl")
 include("QIM_n-dim.jl")
 include("QFM_n-dim.jl")
 
