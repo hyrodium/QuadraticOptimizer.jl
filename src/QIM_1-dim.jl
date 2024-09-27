@@ -1,4 +1,4 @@
-function _recursion_qim!(xs::Vector{<:Real}, fs::Vector{<:Real}, F::StaticVector{3}, X::StaticVector{3})
+function _recursion_qim!(xs::Vector{<:Real}, fs::Vector{<:Real}, X::StaticVector{3}, F::StaticVector{3})
     F[mod(length(xs), 1:3)] = fs[end]
     X[mod(length(xs), 1:3)] = xs[end]
     f₁ ,f₂, f₃ = F
@@ -47,14 +47,14 @@ julia> optimize_qim!(f, xs, fs, 20);
 function optimize_qim!(f, xs::Vector{T}, fs::Vector{T}, n_iter::Integer) where {T <: Real}
     length(xs) ≠ 3 && error("The length of initial values should be 3.")
     U = arithmetic_closure(T)
-    F = SizedVector{3}(zeros(U, 3))
     X = SizedVector{3}(zeros(U, 3))
+    F = SizedVector{3}(zeros(U, 3))
     X[1] = xs[1]
     X[2] = xs[2]
-    F[1] = f(xs[1])
-    F[2] = f(xs[2])
+    F[1] = fs[1]
+    F[2] = fs[2]
     for _ in 1:n_iter
-        x = _recursion_qim!(xs, fs, F, X)
+        x = _recursion_qim!(xs, fs, X, F)
         push!(xs,x)
         push!(fs,f(x))
     end
