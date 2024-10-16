@@ -21,7 +21,7 @@
             @test fxs_qfm isa Vector{Rational{BigInt}}
             @test fps_qfm isa Vector{Rational{BigInt}}
             @test fxs_qim == fps_qim
-            @test_broken fxs_qim == fxs_qfm
+            @test fxs_qim == fxs_qfm
             @test fxs_qim == fps_qfm
             @test SVector.(xs_qim) == ps_qim
             @test ForwardDiff.derivative(G, xs_qim[end]) < 1e-20
@@ -39,7 +39,7 @@
             @test fxs_qfm isa Vector{BigFloat}
             @test fps_qfm isa Vector{BigFloat}
             @test fxs_qim ≈ fps_qim
-            @test_broken fxs_qim ≈ fxs_qfm
+            @test fxs_qim ≈ fxs_qfm
             @test fxs_qim ≈ fps_qfm
             @test SVector.(xs_qim) ≈ ps_qim
             @test ForwardDiff.derivative(G, xs_qim[end]) < 1e-20

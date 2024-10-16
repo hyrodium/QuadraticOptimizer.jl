@@ -45,11 +45,12 @@ julia> fs = f.(xs);
 julia> optimize_qfm!(f, xs, fs, 5);  # Optimize 5 steps
 ```
 """
-function optimize_qfm!(f, xs::Vector{<:Real}, fs::Vector{<:Real}, n_iter::Integer)
+function optimize_qfm!(f, xs::Vector{T}, fs::Vector{T}, n_iter::Integer) where {T<:Real}
+    U = arithmetic_closure(T)
     N = length(xs)
     length(xs) == N ≥ 3 || error("The length of initial values should be 3.")
-    X = ones(3, N)
-    F = ones(N)
+    X = ones(U, 3, N)
+    F = ones(U, N)
     X[1, 1:N-1] .= xs[1:N-1].^2/2
     X[2, 1:N-1] .= xs[1:N-1]
     F[1:N-1] .= fs[1:N-1]
