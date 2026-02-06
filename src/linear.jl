@@ -87,3 +87,96 @@ end
 # TODO: distance(l1::Linear, l2::Linear)
 # TODO: Base.rtoldefault for Linear
 # TODO: Base.isapprox for Linear
+
+function _linear(X::StaticMatrix{M,M}, F::StaticVector{M}, ::Val{D}) where {M, D}
+    M ≠ D + 1 && throw(ArgumentError("The input value M=$(M) must be equal to D+1=$(D+1)."))
+    Y = X' \ F
+    a = SVector{D}(Y[SOneTo(D)])
+    b = Y[end]
+    return Linear(a, b)
+end
+
+function _linear(X::AbstractMatrix, F::AbstractVector, ::Val{D}) where {D}
+    Y = (X*X')\(X*F)
+    a = SVector{D}(Y[SOneTo(D)])
+    b = Y[end]
+    return Linear(a, b)
+end
+
+"""
+    linear_interpolation(ps::AbstractVector{<:StaticVector{D, <:Real}}, fs::AbstractVector{<:Real}) where D
+
+Calculate linear interpolation based on input values.
+Requires exactly `D+1` points for `D`-dimensional linear polynomial.
+
+# Examples
+```jldoctest
+julia> using QuadraticOptimizer, StaticArrays, Random
+
+julia> Random.seed!(42);
+
+julia> l = Linear{2}([1, 2], 3)
+Linear{2, Int64}([1, 2], 3)
+
+julia> ps = [@SVector rand(2) for _ in 1:3]
+3-element Vector{SVector{2, Float64}}:
+ [0.6293451231426089, 0.4503389405961936]
+ [0.47740714343281776, 0.7031298490032014]
+ [0.6733461456394962, 0.16589443479313404]
+
+julia> linear_interpolation(ps, l.(ps))
+Linear{2, Float64}([0.9999999999999993, 1.9999999999999996], 3.0000000000000004)
+```
+"""
+function linear_interpolation(ps::AbstractVector{<:StaticVector{D, T}}, fs::AbstractVector{<:Real}) where {D, T<:Real}
+    M = D + 1
+    N = length(ps)
+    U = arithmetic_closure(T)
+    length(fs) == N == M || error("The length of initial values should be equal to $(M).")
+    X = SizedMatrix{M,M}(ones(U, M, M))
+    for j in 1:M
+        X[1:D, j] .= ps[j]
+    end
+    F = SizedVector{M}(U.(fs))
+    return _linear(X, F, Val(D))
+end
+
+"""
+    linear_fitting(ps::AbstractVector{<:StaticVector{D, <:Real}}, fs::AbstractVector{<:Real}) where D
+
+Calculate linear fitting based on input values.
+
+# Examples
+```jldoctest
+julia> using QuadraticOptimizer, StaticArrays, Random
+
+julia> Random.seed!(42);
+
+julia> l = Linear{2}([1, 2], 3)
+Linear{2, Int64}([1, 2], 3)
+
+julia> ps = [@SVector rand(2) for _ in 1:6]
+6-element Vector{SVector{2, Float64}}:
+ [0.6293451231426089, 0.4503389405961936]
+ [0.47740714343281776, 0.7031298490032014]
+ [0.6733461456394962, 0.16589443479313404]
+ [0.6134782250008441, 0.6683403279577278]
+ [0.4570310908017041, 0.2993652953937611]
+ [0.6611433726193705, 0.6394313620423493]
+
+julia> linear_fitting(ps, l.(ps))
+Linear{2, Float64}([0.9999999999999748, 2.0000000000000027], 3.0000000000000133)
+```
+"""
+function linear_fitting(ps::AbstractVector{<:StaticVector{D, T}}, fs::AbstractVector{<:Real}) where {D, T<:Real}
+    N = length(ps)
+    M = D + 1
+    U = arithmetic_closure(T)
+    length(fs) == N ≥ M || error("The length of initial values should be larger than or equal to $(M).")
+    X = ones(U, M, N)
+    for j in 1:N
+        X[1:D, j] .= ps[j]
+    end
+    F = U.(fs)
+    return _linear(X, F, Val(D))
+end

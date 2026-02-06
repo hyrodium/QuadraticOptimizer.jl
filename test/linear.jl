@@ -163,3 +163,93 @@
         @test l2([0, 0, 0]) == 4
     end
 end
+
+@testset "linear_interpolation" begin
+    @testset "exact interpolation (D = $D)" for D in 1:5
+        Random.seed!(42)
+        l = Linear(SVector{D}(randn(D)), randn())
+        M = D + 1
+        ps = [@SVector rand(D) for _ in 1:M]
+        fs = l.(ps)
+        l_interp = linear_interpolation(ps, fs)
+        @test l_interp.a ≈ l.a
+        @test l_interp.b ≈ l.b
+        # Verify interpolation passes through all points
+        for (p, f) in zip(ps, fs)
+            @test l_interp(p) ≈ f
+        end
+    end
+
+    @testset "error on wrong number of points" begin
+        ps_few = [@SVector rand(2) for _ in 1:2]  # Need 3 for D=2
+        fs_few = rand(2)
+        @test_throws ErrorException linear_interpolation(ps_few, fs_few)
+
+        ps_many = [@SVector rand(2) for _ in 1:4]  # Need exactly 3 for D=2
+        fs_many = rand(4)
+        @test_throws ErrorException linear_interpolation(ps_many, fs_many)
+    end
+
+    @testset "Rational type" begin
+        l = Linear(SA[1//1, 2//1], 3//1)
+        ps = [SA[0//1, 0//1], SA[1//1, 0//1], SA[0//1, 1//1]]
+        fs = l.(ps)
+        l_interp = linear_interpolation(ps, fs)
+        @test l_interp.a == l.a
+        @test l_interp.b == l.b
+    end
+end
+
+@testset "linear_fitting" begin
+    @testset "exact fitting with M points (D = $D)" for D in 1:5
+        Random.seed!(42)
+        l = Linear(SVector{D}(randn(D)), randn())
+        M = D + 1
+        ps = [@SVector rand(D) for _ in 1:M]
+        fs = l.(ps)
+        l_fit = linear_fitting(ps, fs)
+        @test l_fit.a ≈ l.a
+        @test l_fit.b ≈ l.b
+    end
+
+    @testset "overdetermined exact (D = $D)" for D in 1:5
+        Random.seed!(42)
+        l = Linear(SVector{D}(randn(D)), randn())
+        N = 10
+        ps = [@SVector rand(D) for _ in 1:N]
+        fs = l.(ps)
+        l_fit = linear_fitting(ps, fs)
+        @test l_fit.a ≈ l.a
+        @test l_fit.b ≈ l.b
+    end
+
+    @testset "overdetermined with noise" begin
+        Random.seed!(42)
+        l = Linear(SA[1.0, 2.0], 3.0)
+        ps = [@SVector rand(2) for _ in 1:100]
+        fs = l.(ps) .+ 0.01 .* randn(100)
+        l_fit = linear_fitting(ps, fs)
+        @test isapprox(l_fit.a, l.a, atol=0.05)
+        @test isapprox(l_fit.b, l.b, atol=0.05)
+    end
+
+    @testset "error on insufficient points" begin
+        ps_few = [@SVector rand(2) for _ in 1:2]  # Need at least 3 for D=2
+        fs_few = rand(2)
+        @test_throws ErrorException linear_fitting(ps_few, fs_few)
+    end
+
+    @testset "interpolation vs fitting equivalence with M points" begin
+        Random.seed!(42)
+        for D in 1:4
+            l = Linear(SVector{D}(randn(D)), randn())
+            M = D + 1
+            ps = [@SVector rand(D) for _ in 1:M]
+            fs = l.(ps)
+            l_interp = linear_interpolation(ps, fs)
+            l_fit = linear_fitting(ps, fs)
+            @test l_interp.a ≈ l_fit.a
+            @test l_interp.b ≈ l_fit.b
+        end
+    end
+end

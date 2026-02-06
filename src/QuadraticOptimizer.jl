@@ -7,6 +7,8 @@ export Quadratic
 export Linear
 export quadratic_interpolation
 export quadratic_fitting
+export linear_interpolation
+export linear_fitting
 export optimize_qim
 export optimize_qfm
 export optimize_qim!
