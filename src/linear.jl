@@ -14,7 +14,7 @@ julia> l = Linear{2}([-1.2, -2.3], 4.5)
 Linear{2, Float64}([-1.2, -2.3], 4.5)
 
 julia> l([1, 2])
--1.3
+-1.2999999999999998
 ```
 """
 struct Linear{D, T<:Real}
@@ -125,7 +125,7 @@ julia> ps = [@SVector rand(2) for _ in 1:3]
  [0.6733461456394962, 0.16589443479313404]
 
 julia> linear_interpolation(ps, l.(ps))
-Linear{2, Float64}([0.9999999999999993, 1.9999999999999996], 3.0000000000000004)
+Linear{2, Float64}([0.9999999999999952, 1.999999999999994], 3.0000000000000067)
 ```
 """
 function linear_interpolation(ps::AbstractVector{<:StaticVector{D, T}}, fs::AbstractVector{<:Real}) where {D, T<:Real}
