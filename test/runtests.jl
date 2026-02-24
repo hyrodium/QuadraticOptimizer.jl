@@ -43,6 +43,7 @@ function Q(::Val{D}) where D
 end
 
 include("quadratic.jl")
+include("linear.jl")
 include("qim.jl")
 include("qfm.jl")
 include("qim-qfm.jl")
